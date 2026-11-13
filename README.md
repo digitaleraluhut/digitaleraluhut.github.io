@@ -28,9 +28,25 @@ Internet → Cloudflare Tunnel (outbound-only) → k3s → Apps
 |------|------|---------------|
 | [homelab](https://github.com/digitaleraluhut/homelab) | Platform layer | k3s cluster, Cloudflare Tunnel, Traefik Gateway API, cert-manager, External Secrets, Authelia, OAuth2-Proxy |
 | [local-ai](https://github.com/digitaleraluhut/local-ai) | AI layer | llama.cpp (LLM), whisper.cpp (STT), ComfyUI + FLUX (image gen), ROCm, systemd services |
-| [homelab-apps](https://github.com/digitaleraluhut/homelab-apps) | Application layer | LobeHub (AI chat), Matrix + WhatsApp/Signal bridges + voice transcription, OpenCode (remote coding), Aftertouch (Bose speakers) |
+| [homelab-apps](https://github.com/digitaleraluhut/homelab-apps) | Application layer | LibreChat (AI chat), OpenCode (remote coding), a private wiki, SoundTouch (Bose speakers) |
 
-Each app in `homelab-apps` is a standalone Pulumi project that references the shared infrastructure from `homelab`. The `local-ai` endpoints are consumed by apps like LobeHub and the Matrix transcription bot.
+Each app in `homelab-apps` is a standalone Pulumi project that references the shared infrastructure from `homelab`. The `local-ai` endpoints are consumed by apps like LibreChat and by the apprentice agent (see Operations).
+
+## Operations
+
+The homelab is run by agents, under human review. Three roles, each with narrow, enforced rights:
+
+| Role | Who | Can | Cannot |
+|------|-----|-----|--------|
+| Owner | a human | review and merge rights, host and CI changes | — |
+| Operator | Claude (Claude Code, as a GitHub App) | read the cluster, open PRs, merge app changes | change rights, push CI workflows, write to the cluster except through CI |
+| Apprentice | WALL-E: Qwen 3.6 on the local GPU, in a durable [pi](https://pi.dev) session | watch the homelab hourly, prepare issues, scripts and changes | reach GitHub or the internet (except GET to an allowlist), publish anything itself |
+
+**How changes reach the systems:** apps by PR to `homelab-apps` (CI deploys with rights limited to the app's namespace), cluster base and host by PR to `homelab` with owner review (the host pulls `main` every ten minutes). Admin steps outside these paths are runbooks in the wiki.
+
+**How the apprentice learns:** it keeps no memory between runs. When it gets something wrong, the operator does not fix its work; it improves the apprentice's environment (instructions, skills, tools, data) and gives it the same task again. Fixed checks decide what is broken; the model only triages, and recurring questions become deterministic scripts.
+
+Talk: [Training WALL-E — an AI operator as the trainer of a small local agent](talks/training-walle/) (slides with speaker notes, press `S`).
 
 ## Hardware
 

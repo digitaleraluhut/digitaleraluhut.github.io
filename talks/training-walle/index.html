@@ -1,0 +1,680 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Training WALL-E</title><meta name="description" content="How an AI operator trains a small local agent: instructions, concept, lessons, evolution."><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,600;1,400&display=swap"><style>/*!
+* reveal.js 5.1.0
+* https://revealjs.com
+* MIT licensed
+*
+* Copyright (C) 2011-2024 Hakim El Hattab, https://hakim.se
+*/.reveal .r-stretch,.reveal .stretch{max-width:none;max-height:none}.reveal pre.r-stretch code,.reveal pre.stretch code{height:100%;max-height:100%;box-sizing:border-box}.reveal .r-fit-text{display:inline-block;white-space:nowrap}.reveal .r-stack{display:grid;grid-template-rows:100%}.reveal .r-stack>*{grid-area:1/1;margin:auto}.reveal .r-hstack,.reveal .r-vstack{display:flex}.reveal .r-hstack img,.reveal .r-hstack video,.reveal .r-vstack img,.reveal .r-vstack video{min-width:0;min-height:0;object-fit:contain}.reveal .r-vstack{flex-direction:column;align-items:center;justify-content:center}.reveal .r-hstack{flex-direction:row;align-items:center;justify-content:center}.reveal .items-stretch{align-items:stretch}.reveal .items-start{align-items:flex-start}.reveal .items-center{align-items:center}.reveal .items-end{align-items:flex-end}.reveal .justify-between{justify-content:space-between}.reveal .justify-around{justify-content:space-around}.reveal .justify-start{justify-content:flex-start}.reveal .justify-center{justify-content:center}.reveal .justify-end{justify-content:flex-end}html.reveal-full-page{width:100%;height:100%;height:100vh;height:calc(var(--vh,1vh) * 100);height:100svh;overflow:hidden}.reveal-viewport{height:100%;overflow:hidden;position:relative;line-height:1;margin:0;background-color:#fff;color:#000;--r-controls-spacing:12px}.reveal-viewport:fullscreen{top:0!important;left:0!important;width:100%!important;height:100%!important;transform:none!important}.reveal .fragment{transition:all .2s ease}.reveal .fragment:not(.custom){opacity:0;visibility:hidden;will-change:opacity}.reveal .fragment.visible{opacity:1;visibility:inherit}.reveal .fragment.disabled{transition:none}.reveal .fragment.grow{opacity:1;visibility:inherit}.reveal .fragment.grow.visible{transform:scale(1.3)}.reveal .fragment.shrink{opacity:1;visibility:inherit}.reveal .fragment.shrink.visible{transform:scale(.7)}.reveal .fragment.zoom-in{transform:scale(.1)}.reveal .fragment.zoom-in.visible{transform:none}.reveal .fragment.fade-out{opacity:1;visibility:inherit}.reveal .fragment.fade-out.visible{opacity:0;visibility:hidden}.reveal .fragment.semi-fade-out{opacity:1;visibility:inherit}.reveal .fragment.semi-fade-out.visible{opacity:.5;visibility:inherit}.reveal .fragment.strike{opacity:1;visibility:inherit}.reveal .fragment.strike.visible{text-decoration:line-through}.reveal .fragment.fade-up{transform:translate(0,40px)}.reveal .fragment.fade-up.visible{transform:translate(0,0)}.reveal .fragment.fade-down{transform:translate(0,-40px)}.reveal .fragment.fade-down.visible{transform:translate(0,0)}.reveal .fragment.fade-right{transform:translate(-40px,0)}.reveal .fragment.fade-right.visible{transform:translate(0,0)}.reveal .fragment.fade-left{transform:translate(40px,0)}.reveal .fragment.fade-left.visible{transform:translate(0,0)}.reveal .fragment.current-visible,.reveal .fragment.fade-in-then-out{opacity:0;visibility:hidden}.reveal .fragment.current-visible.current-fragment,.reveal .fragment.fade-in-then-out.current-fragment{opacity:1;visibility:inherit}.reveal .fragment.fade-in-then-semi-out{opacity:0;visibility:hidden}.reveal .fragment.fade-in-then-semi-out.visible{opacity:.5;visibility:inherit}.reveal .fragment.fade-in-then-semi-out.current-fragment{opacity:1;visibility:inherit}.reveal .fragment.highlight-blue,.reveal .fragment.highlight-current-blue,.reveal .fragment.highlight-current-green,.reveal .fragment.highlight-current-red,.reveal .fragment.highlight-green,.reveal .fragment.highlight-red{opacity:1;visibility:inherit}.reveal .fragment.highlight-red.visible{color:#ff2c2d}.reveal .fragment.highlight-green.visible{color:#17ff2e}.reveal .fragment.highlight-blue.visible{color:#1b91ff}.reveal .fragment.highlight-current-red.current-fragment{color:#ff2c2d}.reveal .fragment.highlight-current-green.current-fragment{color:#17ff2e}.reveal .fragment.highlight-current-blue.current-fragment{color:#1b91ff}.reveal:after{content:"";font-style:italic}.reveal iframe{z-index:1}.reveal a{position:relative}@keyframes bounce-right{0%,10%,25%,40%,50%{transform:translateX(0)}20%{transform:translateX(10px)}30%{transform:translateX(-5px)}}@keyframes bounce-left{0%,10%,25%,40%,50%{transform:translateX(0)}20%{transform:translateX(-10px)}30%{transform:translateX(5px)}}@keyframes bounce-down{0%,10%,25%,40%,50%{transform:translateY(0)}20%{transform:translateY(10px)}30%{transform:translateY(-5px)}}.reveal .controls{display:none;position:absolute;top:auto;bottom:var(--r-controls-spacing);right:var(--r-controls-spacing);left:auto;z-index:11;color:#000;pointer-events:none;font-size:10px}.reveal .controls button{position:absolute;padding:0;background-color:transparent;border:0;outline:0;cursor:pointer;color:currentColor;transform:scale(.9999);transition:color .2s ease,opacity .2s ease,transform .2s ease;z-index:2;pointer-events:auto;font-size:inherit;visibility:hidden;opacity:0;-webkit-appearance:none;-webkit-tap-highlight-color:transparent}.reveal .controls .controls-arrow:after,.reveal .controls .controls-arrow:before{content:"";position:absolute;top:0;left:0;width:2.6em;height:.5em;border-radius:.25em;background-color:currentColor;transition:all .15s ease,background-color .8s ease;transform-origin:.2em 50%;will-change:transform}.reveal .controls .controls-arrow{position:relative;width:3.6em;height:3.6em}.reveal .controls .controls-arrow:before{transform:translateX(.5em) translateY(1.55em) rotate(45deg)}.reveal .controls .controls-arrow:after{transform:translateX(.5em) translateY(1.55em) rotate(-45deg)}.reveal .controls .controls-arrow:hover:before{transform:translateX(.5em) translateY(1.55em) rotate(40deg)}.reveal .controls .controls-arrow:hover:after{transform:translateX(.5em) translateY(1.55em) rotate(-40deg)}.reveal .controls .controls-arrow:active:before{transform:translateX(.5em) translateY(1.55em) rotate(36deg)}.reveal .controls .controls-arrow:active:after{transform:translateX(.5em) translateY(1.55em) rotate(-36deg)}.reveal .controls .navigate-left{right:6.4em;bottom:3.2em;transform:translateX(-10px)}.reveal .controls .navigate-left.highlight{animation:bounce-left 2s 50 both ease-out}.reveal .controls .navigate-right{right:0;bottom:3.2em;transform:translateX(10px)}.reveal .controls .navigate-right .controls-arrow{transform:rotate(180deg)}.reveal .controls .navigate-right.highlight{animation:bounce-right 2s 50 both ease-out}.reveal .controls .navigate-up{right:3.2em;bottom:6.4em;transform:translateY(-10px)}.reveal .controls .navigate-up .controls-arrow{transform:rotate(90deg)}.reveal .controls .navigate-down{right:3.2em;bottom:-1.4em;padding-bottom:1.4em;transform:translateY(10px)}.reveal .controls .navigate-down .controls-arrow{transform:rotate(-90deg)}.reveal .controls .navigate-down.highlight{animation:bounce-down 2s 50 both ease-out}.reveal .controls[data-controls-back-arrows=faded] .navigate-up.enabled{opacity:.3}.reveal .controls[data-controls-back-arrows=faded] .navigate-up.enabled:hover{opacity:1}.reveal .controls[data-controls-back-arrows=hidden] .navigate-up.enabled{opacity:0;visibility:hidden}.reveal .controls .enabled{visibility:visible;opacity:.9;cursor:pointer;transform:none}.reveal .controls .enabled.fragmented{opacity:.5}.reveal .controls .enabled.fragmented:hover,.reveal .controls .enabled:hover{opacity:1}.reveal:not(.rtl) .controls[data-controls-back-arrows=faded] .navigate-left.enabled{opacity:.3}.reveal:not(.rtl) .controls[data-controls-back-arrows=faded] .navigate-left.enabled:hover{opacity:1}.reveal:not(.rtl) .controls[data-controls-back-arrows=hidden] .navigate-left.enabled{opacity:0;visibility:hidden}.reveal.rtl .controls[data-controls-back-arrows=faded] .navigate-right.enabled{opacity:.3}.reveal.rtl .controls[data-controls-back-arrows=faded] .navigate-right.enabled:hover{opacity:1}.reveal.rtl .controls[data-controls-back-arrows=hidden] .navigate-right.enabled{opacity:0;visibility:hidden}.reveal[data-navigation-mode=linear].has-horizontal-slides .navigate-down,.reveal[data-navigation-mode=linear].has-horizontal-slides .navigate-up{display:none}.reveal:not(.has-vertical-slides) .controls .navigate-left,.reveal[data-navigation-mode=linear].has-horizontal-slides .navigate-left{bottom:1.4em;right:5.5em}.reveal:not(.has-vertical-slides) .controls .navigate-right,.reveal[data-navigation-mode=linear].has-horizontal-slides .navigate-right{bottom:1.4em;right:.5em}.reveal:not(.has-horizontal-slides) .controls .navigate-up{right:1.4em;bottom:5em}.reveal:not(.has-horizontal-slides) .controls .navigate-down{right:1.4em;bottom:.5em}.reveal.has-dark-background .controls{color:#fff}.reveal.has-light-background .controls{color:#000}.reveal.no-hover .controls .controls-arrow:active:before,.reveal.no-hover .controls .controls-arrow:hover:before{transform:translateX(.5em) translateY(1.55em) rotate(45deg)}.reveal.no-hover .controls .controls-arrow:active:after,.reveal.no-hover .controls .controls-arrow:hover:after{transform:translateX(.5em) translateY(1.55em) rotate(-45deg)}@media screen and (min-width:500px){.reveal-viewport{--r-controls-spacing:0.8em}.reveal .controls[data-controls-layout=edges]{top:0;right:0;bottom:0;left:0}.reveal .controls[data-controls-layout=edges] .navigate-down,.reveal .controls[data-controls-layout=edges] .navigate-left,.reveal .controls[data-controls-layout=edges] .navigate-right,.reveal .controls[data-controls-layout=edges] .navigate-up{bottom:auto;right:auto}.reveal .controls[data-controls-layout=edges] .navigate-left{top:50%;left:var(--r-controls-spacing);margin-top:-1.8em}.reveal .controls[data-controls-layout=edges] .navigate-right{top:50%;right:var(--r-controls-spacing);margin-top:-1.8em}.reveal .controls[data-controls-layout=edges] .navigate-up{top:var(--r-controls-spacing);left:50%;margin-left:-1.8em}.reveal .controls[data-controls-layout=edges] .navigate-down{bottom:calc(var(--r-controls-spacing) - 1.4em + .3em);left:50%;margin-left:-1.8em}}.reveal .progress{position:absolute;display:none;height:3px;width:100%;bottom:0;left:0;z-index:10;background-color:rgba(0,0,0,.2);color:#fff}.reveal .progress:after{content:"";display:block;position:absolute;height:10px;width:100%;top:-10px}.reveal .progress span{display:block;height:100%;width:100%;background-color:currentColor;transition:transform .8s cubic-bezier(.26,.86,.44,.985);transform-origin:0 0;transform:scaleX(0)}.reveal .slide-number{position:absolute;display:block;right:8px;bottom:8px;z-index:31;font-family:Helvetica,sans-serif;font-size:12px;line-height:1;color:#fff;background-color:rgba(0,0,0,.4);padding:5px}.reveal .slide-number a{color:currentColor}.reveal .slide-number-delimiter{margin:0 3px}.reveal{position:relative;width:100%;height:100%;overflow:hidden;touch-action:pinch-zoom}.reveal.embedded{touch-action:pan-y}.reveal.embedded.is-vertical-slide{touch-action:none}.reveal .slides{position:absolute;width:100%;height:100%;top:0;right:0;bottom:0;left:0;margin:auto;pointer-events:none;overflow:visible;z-index:1;text-align:center;perspective:600px;perspective-origin:50% 40%}.reveal .slides>section{perspective:600px}.reveal .slides>section,.reveal .slides>section>section{display:none;position:absolute;width:100%;pointer-events:auto;z-index:10;transform-style:flat;transition:transform-origin .8s cubic-bezier(.26,.86,.44,.985),transform .8s cubic-bezier(.26,.86,.44,.985),visibility .8s cubic-bezier(.26,.86,.44,.985),opacity .8s cubic-bezier(.26,.86,.44,.985)}.reveal[data-transition-speed=fast] .slides section{transition-duration:.4s}.reveal[data-transition-speed=slow] .slides section{transition-duration:1.2s}.reveal .slides section[data-transition-speed=fast]{transition-duration:.4s}.reveal .slides section[data-transition-speed=slow]{transition-duration:1.2s}.reveal .slides>section.stack{padding-top:0;padding-bottom:0;pointer-events:none;height:100%}.reveal .slides>section.present,.reveal .slides>section>section.present{display:block;z-index:11;opacity:1}.reveal .slides>section:empty,.reveal .slides>section>section:empty,.reveal .slides>section>section[data-background-interactive],.reveal .slides>section[data-background-interactive]{pointer-events:none}.reveal.center,.reveal.center .slides,.reveal.center .slides section{min-height:0!important}.reveal .slides>section:not(.present),.reveal .slides>section>section:not(.present){pointer-events:none}.reveal.overview .slides>section,.reveal.overview .slides>section>section{pointer-events:auto}.reveal .slides>section.future,.reveal .slides>section.future>section,.reveal .slides>section.past,.reveal .slides>section.past>section,.reveal .slides>section>section.future,.reveal .slides>section>section.past{opacity:0}.reveal .slides>section[data-transition=slide].past,.reveal .slides>section[data-transition~=slide-out].past,.reveal.slide .slides>section:not([data-transition]).past{transform:translate(-150%,0)}.reveal .slides>section[data-transition=slide].future,.reveal .slides>section[data-transition~=slide-in].future,.reveal.slide .slides>section:not([data-transition]).future{transform:translate(150%,0)}.reveal .slides>section>section[data-transition=slide].past,.reveal .slides>section>section[data-transition~=slide-out].past,.reveal.slide .slides>section>section:not([data-transition]).past{transform:translate(0,-150%)}.reveal .slides>section>section[data-transition=slide].future,.reveal .slides>section>section[data-transition~=slide-in].future,.reveal.slide .slides>section>section:not([data-transition]).future{transform:translate(0,150%)}.reveal .slides>section[data-transition=linear].past,.reveal .slides>section[data-transition~=linear-out].past,.reveal.linear .slides>section:not([data-transition]).past{transform:translate(-150%,0)}.reveal .slides>section[data-transition=linear].future,.reveal .slides>section[data-transition~=linear-in].future,.reveal.linear .slides>section:not([data-transition]).future{transform:translate(150%,0)}.reveal .slides>section>section[data-transition=linear].past,.reveal .slides>section>section[data-transition~=linear-out].past,.reveal.linear .slides>section>section:not([data-transition]).past{transform:translate(0,-150%)}.reveal .slides>section>section[data-transition=linear].future,.reveal .slides>section>section[data-transition~=linear-in].future,.reveal.linear .slides>section>section:not([data-transition]).future{transform:translate(0,150%)}.reveal .slides section[data-transition=default].stack,.reveal.default .slides section.stack{transform-style:preserve-3d}.reveal .slides>section[data-transition=default].past,.reveal .slides>section[data-transition~=default-out].past,.reveal.default .slides>section:not([data-transition]).past{transform:translate3d(-100%,0,0) rotateY(-90deg) translate3d(-100%,0,0)}.reveal .slides>section[data-transition=default].future,.reveal .slides>section[data-transition~=default-in].future,.reveal.default .slides>section:not([data-transition]).future{transform:translate3d(100%,0,0) rotateY(90deg) translate3d(100%,0,0)}.reveal .slides>section>section[data-transition=default].past,.reveal .slides>section>section[data-transition~=default-out].past,.reveal.default .slides>section>section:not([data-transition]).past{transform:translate3d(0,-300px,0) rotateX(70deg) translate3d(0,-300px,0)}.reveal .slides>section>section[data-transition=default].future,.reveal .slides>section>section[data-transition~=default-in].future,.reveal.default .slides>section>section:not([data-transition]).future{transform:translate3d(0,300px,0) rotateX(-70deg) translate3d(0,300px,0)}.reveal .slides section[data-transition=convex].stack,.reveal.convex .slides section.stack{transform-style:preserve-3d}.reveal .slides>section[data-transition=convex].past,.reveal .slides>section[data-transition~=convex-out].past,.reveal.convex .slides>section:not([data-transition]).past{transform:translate3d(-100%,0,0) rotateY(-90deg) translate3d(-100%,0,0)}.reveal .slides>section[data-transition=convex].future,.reveal .slides>section[data-transition~=convex-in].future,.reveal.convex .slides>section:not([data-transition]).future{transform:translate3d(100%,0,0) rotateY(90deg) translate3d(100%,0,0)}.reveal .slides>section>section[data-transition=convex].past,.reveal .slides>section>section[data-transition~=convex-out].past,.reveal.convex .slides>section>section:not([data-transition]).past{transform:translate3d(0,-300px,0) rotateX(70deg) translate3d(0,-300px,0)}.reveal .slides>section>section[data-transition=convex].future,.reveal .slides>section>section[data-transition~=convex-in].future,.reveal.convex .slides>section>section:not([data-transition]).future{transform:translate3d(0,300px,0) rotateX(-70deg) translate3d(0,300px,0)}.reveal .slides section[data-transition=concave].stack,.reveal.concave .slides section.stack{transform-style:preserve-3d}.reveal .slides>section[data-transition=concave].past,.reveal .slides>section[data-transition~=concave-out].past,.reveal.concave .slides>section:not([data-transition]).past{transform:translate3d(-100%,0,0) rotateY(90deg) translate3d(-100%,0,0)}.reveal .slides>section[data-transition=concave].future,.reveal .slides>section[data-transition~=concave-in].future,.reveal.concave .slides>section:not([data-transition]).future{transform:translate3d(100%,0,0) rotateY(-90deg) translate3d(100%,0,0)}.reveal .slides>section>section[data-transition=concave].past,.reveal .slides>section>section[data-transition~=concave-out].past,.reveal.concave .slides>section>section:not([data-transition]).past{transform:translate3d(0,-80%,0) rotateX(-70deg) translate3d(0,-80%,0)}.reveal .slides>section>section[data-transition=concave].future,.reveal .slides>section>section[data-transition~=concave-in].future,.reveal.concave .slides>section>section:not([data-transition]).future{transform:translate3d(0,80%,0) rotateX(70deg) translate3d(0,80%,0)}.reveal .slides section[data-transition=zoom],.reveal.zoom .slides section:not([data-transition]){transition-timing-function:ease}.reveal .slides>section[data-transition=zoom].past,.reveal .slides>section[data-transition~=zoom-out].past,.reveal.zoom .slides>section:not([data-transition]).past{visibility:hidden;transform:scale(16)}.reveal .slides>section[data-transition=zoom].future,.reveal .slides>section[data-transition~=zoom-in].future,.reveal.zoom .slides>section:not([data-transition]).future{visibility:hidden;transform:scale(.2)}.reveal .slides>section>section[data-transition=zoom].past,.reveal .slides>section>section[data-transition~=zoom-out].past,.reveal.zoom .slides>section>section:not([data-transition]).past{transform:scale(16)}.reveal .slides>section>section[data-transition=zoom].future,.reveal .slides>section>section[data-transition~=zoom-in].future,.reveal.zoom .slides>section>section:not([data-transition]).future{transform:scale(.2)}.reveal.cube .slides{perspective:1300px}.reveal.cube .slides section{padding:30px;min-height:700px;backface-visibility:hidden;box-sizing:border-box;transform-style:preserve-3d}.reveal.center.cube .slides section{min-height:0}.reveal.cube .slides section:not(.stack):before{content:"";position:absolute;display:block;width:100%;height:100%;left:0;top:0;background:rgba(0,0,0,.1);border-radius:4px;transform:translateZ(-20px)}.reveal.cube .slides section:not(.stack):after{content:"";position:absolute;display:block;width:90%;height:30px;left:5%;bottom:0;background:0 0;z-index:1;border-radius:4px;box-shadow:0 95px 25px rgba(0,0,0,.2);transform:translateZ(-90px) rotateX(65deg)}.reveal.cube .slides>section.stack{padding:0;background:0 0}.reveal.cube .slides>section.past{transform-origin:100% 0;transform:translate3d(-100%,0,0) rotateY(-90deg)}.reveal.cube .slides>section.future{transform-origin:0 0;transform:translate3d(100%,0,0) rotateY(90deg)}.reveal.cube .slides>section>section.past{transform-origin:0 100%;transform:translate3d(0,-100%,0) rotateX(90deg)}.reveal.cube .slides>section>section.future{transform-origin:0 0;transform:translate3d(0,100%,0) rotateX(-90deg)}.reveal.page .slides{perspective-origin:0 50%;perspective:3000px}.reveal.page .slides section{padding:30px;min-height:700px;box-sizing:border-box;transform-style:preserve-3d}.reveal.page .slides section.past{z-index:12}.reveal.page .slides section:not(.stack):before{content:"";position:absolute;display:block;width:100%;height:100%;left:0;top:0;background:rgba(0,0,0,.1);transform:translateZ(-20px)}.reveal.page .slides section:not(.stack):after{content:"";position:absolute;display:block;width:90%;height:30px;left:5%;bottom:0;background:0 0;z-index:1;border-radius:4px;box-shadow:0 95px 25px rgba(0,0,0,.2);-webkit-transform:translateZ(-90px) rotateX(65deg)}.reveal.page .slides>section.stack{padding:0;background:0 0}.reveal.page .slides>section.past{transform-origin:0 0;transform:translate3d(-40%,0,0) rotateY(-80deg)}.reveal.page .slides>section.future{transform-origin:100% 0;transform:translate3d(0,0,0)}.reveal.page .slides>section>section.past{transform-origin:0 0;transform:translate3d(0,-40%,0) rotateX(80deg)}.reveal.page .slides>section>section.future{transform-origin:0 100%;transform:translate3d(0,0,0)}.reveal .slides section[data-transition=fade],.reveal.fade .slides section:not([data-transition]),.reveal.fade .slides>section>section:not([data-transition]){transform:none;transition:opacity .5s}.reveal.fade.overview .slides section,.reveal.fade.overview .slides>section>section{transition:none}.reveal .slides section[data-transition=none],.reveal.none .slides section:not([data-transition]){transform:none;transition:none}.reveal .pause-overlay{position:absolute;top:0;left:0;width:100%;height:100%;background:#000;visibility:hidden;opacity:0;z-index:100;transition:all 1s ease}.reveal .pause-overlay .resume-button{position:absolute;bottom:20px;right:20px;color:#ccc;border-radius:2px;padding:6px 14px;border:2px solid #ccc;font-size:16px;background:0 0;cursor:pointer}.reveal .pause-overlay .resume-button:hover{color:#fff;border-color:#fff}.reveal.paused .pause-overlay{visibility:visible;opacity:1}.reveal .no-transition,.reveal .no-transition *,.reveal .slides.disable-slide-transitions section{transition:none!important}.reveal .slides.disable-slide-transitions section{transform:none!important}.reveal .backgrounds{position:absolute;width:100%;height:100%;top:0;left:0;perspective:600px}.reveal .slide-background{display:none;position:absolute;width:100%;height:100%;opacity:0;visibility:hidden;overflow:hidden;background-color:rgba(0,0,0,0);transition:all .8s cubic-bezier(.26,.86,.44,.985)}.reveal .slide-background-content{position:absolute;width:100%;height:100%;background-position:50% 50%;background-repeat:no-repeat;background-size:cover}.reveal .slide-background.stack{display:block}.reveal .slide-background.present{opacity:1;visibility:visible;z-index:2}.print-pdf .reveal .slide-background{opacity:1!important;visibility:visible!important}.reveal .slide-background video{position:absolute;width:100%;height:100%;max-width:none;max-height:none;top:0;left:0;object-fit:cover}.reveal .slide-background[data-background-size=contain] video{object-fit:contain}.reveal>.backgrounds .slide-background[data-background-transition=none],.reveal[data-background-transition=none]>.backgrounds .slide-background:not([data-background-transition]){transition:none}.reveal>.backgrounds .slide-background[data-background-transition=slide],.reveal[data-background-transition=slide]>.backgrounds .slide-background:not([data-background-transition]){opacity:1}.reveal>.backgrounds .slide-background.past[data-background-transition=slide],.reveal[data-background-transition=slide]>.backgrounds .slide-background.past:not([data-background-transition]){transform:translate(-100%,0)}.reveal>.backgrounds .slide-background.future[data-background-transition=slide],.reveal[data-background-transition=slide]>.backgrounds .slide-background.future:not([data-background-transition]){transform:translate(100%,0)}.reveal>.backgrounds .slide-background>.slide-background.past[data-background-transition=slide],.reveal[data-background-transition=slide]>.backgrounds .slide-background>.slide-background.past:not([data-background-transition]){transform:translate(0,-100%)}.reveal>.backgrounds .slide-background>.slide-background.future[data-background-transition=slide],.reveal[data-background-transition=slide]>.backgrounds .slide-background>.slide-background.future:not([data-background-transition]){transform:translate(0,100%)}.reveal>.backgrounds .slide-background.past[data-background-transition=convex],.reveal[data-background-transition=convex]>.backgrounds .slide-background.past:not([data-background-transition]){opacity:0;transform:translate3d(-100%,0,0) rotateY(-90deg) translate3d(-100%,0,0)}.reveal>.backgrounds .slide-background.future[data-background-transition=convex],.reveal[data-background-transition=convex]>.backgrounds .slide-background.future:not([data-background-transition]){opacity:0;transform:translate3d(100%,0,0) rotateY(90deg) translate3d(100%,0,0)}.reveal>.backgrounds .slide-background>.slide-background.past[data-background-transition=convex],.reveal[data-background-transition=convex]>.backgrounds .slide-background>.slide-background.past:not([data-background-transition]){opacity:0;transform:translate3d(0,-100%,0) rotateX(90deg) translate3d(0,-100%,0)}.reveal>.backgrounds .slide-background>.slide-background.future[data-background-transition=convex],.reveal[data-background-transition=convex]>.backgrounds .slide-background>.slide-background.future:not([data-background-transition]){opacity:0;transform:translate3d(0,100%,0) rotateX(-90deg) translate3d(0,100%,0)}.reveal>.backgrounds .slide-background.past[data-background-transition=concave],.reveal[data-background-transition=concave]>.backgrounds .slide-background.past:not([data-background-transition]){opacity:0;transform:translate3d(-100%,0,0) rotateY(90deg) translate3d(-100%,0,0)}.reveal>.backgrounds .slide-background.future[data-background-transition=concave],.reveal[data-background-transition=concave]>.backgrounds .slide-background.future:not([data-background-transition]){opacity:0;transform:translate3d(100%,0,0) rotateY(-90deg) translate3d(100%,0,0)}.reveal>.backgrounds .slide-background>.slide-background.past[data-background-transition=concave],.reveal[data-background-transition=concave]>.backgrounds .slide-background>.slide-background.past:not([data-background-transition]){opacity:0;transform:translate3d(0,-100%,0) rotateX(-90deg) translate3d(0,-100%,0)}.reveal>.backgrounds .slide-background>.slide-background.future[data-background-transition=concave],.reveal[data-background-transition=concave]>.backgrounds .slide-background>.slide-background.future:not([data-background-transition]){opacity:0;transform:translate3d(0,100%,0) rotateX(90deg) translate3d(0,100%,0)}.reveal>.backgrounds .slide-background[data-background-transition=zoom],.reveal[data-background-transition=zoom]>.backgrounds .slide-background:not([data-background-transition]){transition-timing-function:ease}.reveal>.backgrounds .slide-background.past[data-background-transition=zoom],.reveal[data-background-transition=zoom]>.backgrounds .slide-background.past:not([data-background-transition]){opacity:0;visibility:hidden;transform:scale(16)}.reveal>.backgrounds .slide-background.future[data-background-transition=zoom],.reveal[data-background-transition=zoom]>.backgrounds .slide-background.future:not([data-background-transition]){opacity:0;visibility:hidden;transform:scale(.2)}.reveal>.backgrounds .slide-background>.slide-background.past[data-background-transition=zoom],.reveal[data-background-transition=zoom]>.backgrounds .slide-background>.slide-background.past:not([data-background-transition]){opacity:0;visibility:hidden;transform:scale(16)}.reveal>.backgrounds .slide-background>.slide-background.future[data-background-transition=zoom],.reveal[data-background-transition=zoom]>.backgrounds .slide-background>.slide-background.future:not([data-background-transition]){opacity:0;visibility:hidden;transform:scale(.2)}.reveal[data-transition-speed=fast]>.backgrounds .slide-background{transition-duration:.4s}.reveal[data-transition-speed=slow]>.backgrounds .slide-background{transition-duration:1.2s}.reveal [data-auto-animate-target^=unmatched]{will-change:opacity}.reveal section[data-auto-animate]:not(.stack):not([data-auto-animate=running]) [data-auto-animate-target^=unmatched]{opacity:0}.reveal.overview{perspective-origin:50% 50%;perspective:700px}.reveal.overview .slides{-moz-transform-style:preserve-3d}.reveal.overview .slides section{height:100%;top:0!important;opacity:1!important;overflow:hidden;visibility:visible!important;cursor:pointer;box-sizing:border-box}.reveal.overview .slides section.present,.reveal.overview .slides section:hover{outline:10px solid rgba(150,150,150,.4);outline-offset:10px}.reveal.overview .slides section .fragment{opacity:1;transition:none}.reveal.overview .slides section:after,.reveal.overview .slides section:before{display:none!important}.reveal.overview .slides>section.stack{padding:0;top:0!important;background:0 0;outline:0;overflow:visible}.reveal.overview .backgrounds{perspective:inherit;-moz-transform-style:preserve-3d}.reveal.overview .backgrounds .slide-background{opacity:1;visibility:visible;outline:10px solid rgba(150,150,150,.1);outline-offset:10px}.reveal.overview .backgrounds .slide-background.stack{overflow:visible}.reveal.overview .slides section,.reveal.overview-deactivating .slides section{transition:none}.reveal.overview .backgrounds .slide-background,.reveal.overview-deactivating .backgrounds .slide-background{transition:none}.reveal.rtl .slides,.reveal.rtl .slides h1,.reveal.rtl .slides h2,.reveal.rtl .slides h3,.reveal.rtl .slides h4,.reveal.rtl .slides h5,.reveal.rtl .slides h6{direction:rtl;font-family:sans-serif}.reveal.rtl code,.reveal.rtl pre{direction:ltr}.reveal.rtl ol,.reveal.rtl ul{text-align:right}.reveal.rtl .progress span{transform-origin:100% 0}.reveal.has-parallax-background .backgrounds{transition:all .8s ease}.reveal.has-parallax-background[data-transition-speed=fast] .backgrounds{transition-duration:.4s}.reveal.has-parallax-background[data-transition-speed=slow] .backgrounds{transition-duration:1.2s}.reveal>.overlay{position:absolute;top:0;left:0;width:100%;height:100%;z-index:1000;background:rgba(0,0,0,.95);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);transition:all .3s ease}.reveal>.overlay .spinner{position:absolute;display:block;top:50%;left:50%;width:32px;height:32px;margin:-16px 0 0 -16px;z-index:10;background-image:url(data:image/gif;base64,R0lGODlhIAAgAPMAAJmZmf%2F%2F%2F6%2Bvr8nJybW1tcDAwOjo6Nvb26ioqKOjo7Ozs%2FLy8vz8%2FAAAAAAAAAAAACH%2FC05FVFNDQVBFMi4wAwEAAAAh%2FhpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh%2BQQJCgAAACwAAAAAIAAgAAAE5xDISWlhperN52JLhSSdRgwVo1ICQZRUsiwHpTJT4iowNS8vyW2icCF6k8HMMBkCEDskxTBDAZwuAkkqIfxIQyhBQBFvAQSDITM5VDW6XNE4KagNh6Bgwe60smQUB3d4Rz1ZBApnFASDd0hihh12BkE9kjAJVlycXIg7CQIFA6SlnJ87paqbSKiKoqusnbMdmDC2tXQlkUhziYtyWTxIfy6BE8WJt5YJvpJivxNaGmLHT0VnOgSYf0dZXS7APdpB309RnHOG5gDqXGLDaC457D1zZ%2FV%2FnmOM82XiHRLYKhKP1oZmADdEAAAh%2BQQJCgAAACwAAAAAIAAgAAAE6hDISWlZpOrNp1lGNRSdRpDUolIGw5RUYhhHukqFu8DsrEyqnWThGvAmhVlteBvojpTDDBUEIFwMFBRAmBkSgOrBFZogCASwBDEY%2FCZSg7GSE0gSCjQBMVG023xWBhklAnoEdhQEfyNqMIcKjhRsjEdnezB%2BA4k8gTwJhFuiW4dokXiloUepBAp5qaKpp6%2BHo7aWW54wl7obvEe0kRuoplCGepwSx2jJvqHEmGt6whJpGpfJCHmOoNHKaHx61WiSR92E4lbFoq%2BB6QDtuetcaBPnW6%2BO7wDHpIiK9SaVK5GgV543tzjgGcghAgAh%2BQQJCgAAACwAAAAAIAAgAAAE7hDISSkxpOrN5zFHNWRdhSiVoVLHspRUMoyUakyEe8PTPCATW9A14E0UvuAKMNAZKYUZCiBMuBakSQKG8G2FzUWox2AUtAQFcBKlVQoLgQReZhQlCIJesQXI5B0CBnUMOxMCenoCfTCEWBsJColTMANldx15BGs8B5wlCZ9Po6OJkwmRpnqkqnuSrayqfKmqpLajoiW5HJq7FL1Gr2mMMcKUMIiJgIemy7xZtJsTmsM4xHiKv5KMCXqfyUCJEonXPN2rAOIAmsfB3uPoAK%2B%2BG%2Bw48edZPK%2BM6hLJpQg484enXIdQFSS1u6UhksENEQAAIfkECQoAAAAsAAAAACAAIAAABOcQyEmpGKLqzWcZRVUQnZYg1aBSh2GUVEIQ2aQOE%2BG%2BcD4ntpWkZQj1JIiZIogDFFyHI0UxQwFugMSOFIPJftfVAEoZLBbcLEFhlQiqGp1Vd140AUklUN3eCA51C1EWMzMCezCBBmkxVIVHBWd3HHl9JQOIJSdSnJ0TDKChCwUJjoWMPaGqDKannasMo6WnM562R5YluZRwur0wpgqZE7NKUm%2BFNRPIhjBJxKZteWuIBMN4zRMIVIhffcgojwCF117i4nlLnY5ztRLsnOk%2BaV%2BoJY7V7m76PdkS4trKcdg0Zc0tTcKkRAAAIfkECQoAAAAsAAAAACAAIAAABO4QyEkpKqjqzScpRaVkXZWQEximw1BSCUEIlDohrft6cpKCk5xid5MNJTaAIkekKGQkWyKHkvhKsR7ARmitkAYDYRIbUQRQjWBwJRzChi9CRlBcY1UN4g0%2FVNB0AlcvcAYHRyZPdEQFYV8ccwR5HWxEJ02YmRMLnJ1xCYp0Y5idpQuhopmmC2KgojKasUQDk5BNAwwMOh2RtRq5uQuPZKGIJQIGwAwGf6I0JXMpC8C7kXWDBINFMxS4DKMAWVWAGYsAdNqW5uaRxkSKJOZKaU3tPOBZ4DuK2LATgJhkPJMgTwKCdFjyPHEnKxFCDhEAACH5BAkKAAAALAAAAAAgACAAAATzEMhJaVKp6s2nIkolIJ2WkBShpkVRWqqQrhLSEu9MZJKK9y1ZrqYK9WiClmvoUaF8gIQSNeF1Er4MNFn4SRSDARWroAIETg1iVwuHjYB1kYc1mwruwXKC9gmsJXliGxc%2BXiUCby9ydh1sOSdMkpMTBpaXBzsfhoc5l58Gm5yToAaZhaOUqjkDgCWNHAULCwOLaTmzswadEqggQwgHuQsHIoZCHQMMQgQGubVEcxOPFAcMDAYUA85eWARmfSRQCdcMe0zeP1AAygwLlJtPNAAL19DARdPzBOWSm1brJBi45soRAWQAAkrQIykShQ9wVhHCwCQCACH5BAkKAAAALAAAAAAgACAAAATrEMhJaVKp6s2nIkqFZF2VIBWhUsJaTokqUCoBq%2BE71SRQeyqUToLA7VxF0JDyIQh%2FMVVPMt1ECZlfcjZJ9mIKoaTl1MRIl5o4CUKXOwmyrCInCKqcWtvadL2SYhyASyNDJ0uIiRMDjI0Fd30%2FiI2UA5GSS5UDj2l6NoqgOgN4gksEBgYFf0FDqKgHnyZ9OX8HrgYHdHpcHQULXAS2qKpENRg7eAMLC7kTBaixUYFkKAzWAAnLC7FLVxLWDBLKCwaKTULgEwbLA4hJtOkSBNqITT3xEgfLpBtzE%2FjiuL04RGEBgwWhShRgQExHBAAh%2BQQJCgAAACwAAAAAIAAgAAAE7xDISWlSqerNpyJKhWRdlSAVoVLCWk6JKlAqAavhO9UkUHsqlE6CwO1cRdCQ8iEIfzFVTzLdRAmZX3I2SfZiCqGk5dTESJeaOAlClzsJsqwiJwiqnFrb2nS9kmIcgEsjQydLiIlHehhpejaIjzh9eomSjZR%2BipslWIRLAgMDOR2DOqKogTB9pCUJBagDBXR6XB0EBkIIsaRsGGMMAxoDBgYHTKJiUYEGDAzHC9EACcUGkIgFzgwZ0QsSBcXHiQvOwgDdEwfFs0sDzt4S6BK4xYjkDOzn0unFeBzOBijIm1Dgmg5YFQwsCMjp1oJ8LyIAACH5BAkKAAAALAAAAAAgACAAAATwEMhJaVKp6s2nIkqFZF2VIBWhUsJaTokqUCoBq%2BE71SRQeyqUToLA7VxF0JDyIQh%2FMVVPMt1ECZlfcjZJ9mIKoaTl1MRIl5o4CUKXOwmyrCInCKqcWtvadL2SYhyASyNDJ0uIiUd6GGl6NoiPOH16iZKNlH6KmyWFOggHhEEvAwwMA0N9GBsEC6amhnVcEwavDAazGwIDaH1ipaYLBUTCGgQDA8NdHz0FpqgTBwsLqAbWAAnIA4FWKdMLGdYGEgraigbT0OITBcg5QwPT4xLrROZL6AuQAPUS7bxLpoWidY0JtxLHKhwwMJBTHgPKdEQAACH5BAkKAAAALAAAAAAgACAAAATrEMhJaVKp6s2nIkqFZF2VIBWhUsJaTokqUCoBq%2BE71SRQeyqUToLA7VxF0JDyIQh%2FMVVPMt1ECZlfcjZJ9mIKoaTl1MRIl5o4CUKXOwmyrCInCKqcWtvadL2SYhyASyNDJ0uIiUd6GAULDJCRiXo1CpGXDJOUjY%2BYip9DhToJA4RBLwMLCwVDfRgbBAaqqoZ1XBMHswsHtxtFaH1iqaoGNgAIxRpbFAgfPQSqpbgGBqUD1wBXeCYp1AYZ19JJOYgH1KwA4UBvQwXUBxPqVD9L3sbp2BNk2xvvFPJd%2BMFCN6HAAIKgNggY0KtEBAAh%2BQQJCgAAACwAAAAAIAAgAAAE6BDISWlSqerNpyJKhWRdlSAVoVLCWk6JKlAqAavhO9UkUHsqlE6CwO1cRdCQ8iEIfzFVTzLdRAmZX3I2SfYIDMaAFdTESJeaEDAIMxYFqrOUaNW4E4ObYcCXaiBVEgULe0NJaxxtYksjh2NLkZISgDgJhHthkpU4mW6blRiYmZOlh4JWkDqILwUGBnE6TYEbCgevr0N1gH4At7gHiRpFaLNrrq8HNgAJA70AWxQIH1%2BvsYMDAzZQPC9VCNkDWUhGkuE5PxJNwiUK4UfLzOlD4WvzAHaoG9nxPi5d%2BjYUqfAhhykOFwJWiAAAIfkECQoAAAAsAAAAACAAIAAABPAQyElpUqnqzaciSoVkXVUMFaFSwlpOCcMYlErAavhOMnNLNo8KsZsMZItJEIDIFSkLGQoQTNhIsFehRww2CQLKF0tYGKYSg%2BygsZIuNqJksKgbfgIGepNo2cIUB3V1B3IvNiBYNQaDSTtfhhx0CwVPI0UJe0%2Bbm4g5VgcGoqOcnjmjqDSdnhgEoamcsZuXO1aWQy8KAwOAuTYYGwi7w5h%2BKr0SJ8MFihpNbx%2B4Erq7BYBuzsdiH1jCAzoSfl0rVirNbRXlBBlLX%2BBP0XJLAPGzTkAuAOqb0WT5AH7OcdCm5B8TgRwSRKIHQtaLCwg1RAAAOwAAAAAAAAAAAA%3D%3D);visibility:visible;opacity:.6;transition:all .3s ease}.reveal>.overlay header{position:absolute;left:0;top:0;width:100%;padding:5px;z-index:2;box-sizing:border-box}.reveal>.overlay header a{display:inline-block;width:40px;height:40px;line-height:36px;padding:0 10px;float:right;opacity:.6;box-sizing:border-box}.reveal>.overlay header a:hover{opacity:1}.reveal>.overlay header a .icon{display:inline-block;width:20px;height:20px;background-position:50% 50%;background-size:100%;background-repeat:no-repeat}.reveal>.overlay header a.close .icon{background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAABkklEQVRYR8WX4VHDMAxG6wnoJrABZQPYBCaBTWAD2g1gE5gg6OOsXuxIlr40d81dfrSJ9V4c2VLK7spHuTJ/5wpM07QXuXc5X0opX2tEJcadjHuV80li/FgxTIEK/5QBCICBD6xEhSMGHgQPgBgLiYVAB1dpSqKDawxTohFw4JSEA3clzgIBPCURwE2JucBR7rhPJJv5OpJwDX+SfDjgx1wACQeJG1aChP9K/IMmdZ8DtESV1WyP3Bt4MwM6sj4NMxMYiqUWHQu4KYA/SYkIjOsm3BXYWMKFDwU2khjCQ4ELJUJ4SmClRArOCmSXGuKma0fYD5CbzHxFpCSGAhfAVSSUGDUk2BWZaff2g6GE15BsBQ9nwmpIGDiyHQddwNTMKkbZaf9fajXQca1EX44puJZUsnY0ObGmITE3GVLCbEhQUjGVt146j6oasWN+49Vph2w1pZ5EansNZqKBm1txbU57iRRcZ86RWMDdWtBJUHBHwoQPi1GV+JCbntmvok7iTX4/Up9mgyTc/FJYDTcndgH/AA5A/CHsyEkVAAAAAElFTkSuQmCC)}.reveal>.overlay header a.external .icon{background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAcElEQVRYR+2WSQoAIQwEzf8f7XiOMkUQxUPlGkM3hVmiQfQR9GYnH1SsAQlI4DiBqkCMoNb9y2e90IAEJPAcgdznU9+engMaeJ7Azh5Y1U67gAho4DqBqmB1buAf0MB1AlVBek83ZPkmJMGc1wAR+AAqod/B97TRpQAAAABJRU5ErkJggg==)}.reveal>.overlay .viewport{position:absolute;display:flex;top:50px;right:0;bottom:0;left:0}.reveal>.overlay.overlay-preview .viewport iframe{width:100%;height:100%;max-width:100%;max-height:100%;border:0;opacity:0;visibility:hidden;transition:all .3s ease}.reveal>.overlay.overlay-preview.loaded .viewport iframe{opacity:1;visibility:visible}.reveal>.overlay.overlay-preview.loaded .viewport-inner{position:absolute;z-index:-1;left:0;top:45%;width:100%;text-align:center;letter-spacing:normal}.reveal>.overlay.overlay-preview .x-frame-error{opacity:0;transition:opacity .3s ease .3s}.reveal>.overlay.overlay-preview.loaded .x-frame-error{opacity:1}.reveal>.overlay.overlay-preview.loaded .spinner{opacity:0;visibility:hidden;transform:scale(.2)}.reveal>.overlay.overlay-help .viewport{overflow:auto;color:#fff}.reveal>.overlay.overlay-help .viewport .viewport-inner{width:600px;margin:auto;padding:20px 20px 80px 20px;text-align:center;letter-spacing:normal}.reveal>.overlay.overlay-help .viewport .viewport-inner .title{font-size:20px}.reveal>.overlay.overlay-help .viewport .viewport-inner table{border:1px solid #fff;border-collapse:collapse;font-size:16px}.reveal>.overlay.overlay-help .viewport .viewport-inner table td,.reveal>.overlay.overlay-help .viewport .viewport-inner table th{width:200px;padding:14px;border:1px solid #fff;vertical-align:middle}.reveal>.overlay.overlay-help .viewport .viewport-inner table th{padding-top:20px;padding-bottom:20px}.reveal .playback{position:absolute;left:15px;bottom:20px;z-index:30;cursor:pointer;transition:all .4s ease;-webkit-tap-highlight-color:transparent}.reveal.overview .playback{opacity:0;visibility:hidden}.reveal .hljs{min-height:100%}.reveal .hljs table{margin:initial}.reveal .hljs-ln-code,.reveal .hljs-ln-numbers{padding:0;border:0}.reveal .hljs-ln-numbers{opacity:.6;padding-right:.75em;text-align:right;vertical-align:top}.reveal .hljs.has-highlights tr:not(.highlight-line){opacity:.4}.reveal .hljs.has-highlights.fragment{transition:all .2s ease}.reveal .hljs:not(:first-child).fragment{position:absolute;top:0;left:0;width:100%;box-sizing:border-box}.reveal pre[data-auto-animate-target]{overflow:hidden}.reveal pre[data-auto-animate-target] code{height:100%}.reveal .roll{display:inline-block;line-height:1.2;overflow:hidden;vertical-align:top;perspective:400px;perspective-origin:50% 50%}.reveal .roll:hover{background:0 0;text-shadow:none}.reveal .roll span{display:block;position:relative;padding:0 2px;pointer-events:none;transition:all .4s ease;transform-origin:50% 0;transform-style:preserve-3d;backface-visibility:hidden}.reveal .roll:hover span{background:rgba(0,0,0,.5);transform:translate3d(0,0,-45px) rotateX(90deg)}.reveal .roll span:after{content:attr(data-title);display:block;position:absolute;left:0;top:0;padding:0 2px;backface-visibility:hidden;transform-origin:50% 0;transform:translate3d(0,110%,0) rotateX(-90deg)}.reveal aside.notes{display:none}.reveal .speaker-notes{display:none;position:absolute;width:33.3333333333%;height:100%;top:0;left:100%;padding:14px 18px 14px 18px;z-index:1;font-size:18px;line-height:1.4;border:1px solid rgba(0,0,0,.05);color:#222;background-color:#f5f5f5;overflow:auto;box-sizing:border-box;text-align:left;font-family:Helvetica,sans-serif;-webkit-overflow-scrolling:touch}.reveal .speaker-notes .notes-placeholder{color:#ccc;font-style:italic}.reveal .speaker-notes:focus{outline:0}.reveal .speaker-notes:before{content:"Speaker notes";display:block;margin-bottom:10px;opacity:.5}.reveal.show-notes{max-width:75%;overflow:visible}.reveal.show-notes .speaker-notes{display:block}@media screen and (min-width:1600px){.reveal .speaker-notes{font-size:20px}}@media screen and (max-width:1024px){.reveal.show-notes{border-left:0;max-width:none;max-height:70%;max-height:70vh;overflow:visible}.reveal.show-notes .speaker-notes{top:100%;left:0;width:100%;height:30vh;border:0}}@media screen and (max-width:600px){.reveal.show-notes{max-height:60%;max-height:60vh}.reveal.show-notes .speaker-notes{top:100%;height:40vh}.reveal .speaker-notes{font-size:14px}}.reveal .jump-to-slide{position:absolute;top:15px;left:15px;z-index:30;font-size:32px;-webkit-tap-highlight-color:transparent}.reveal .jump-to-slide-input{background:0 0;padding:8px;font-size:inherit;color:currentColor;border:0}.reveal .jump-to-slide-input::placeholder{color:currentColor;opacity:.5}.reveal.has-dark-background .jump-to-slide-input{color:#fff}.reveal.has-light-background .jump-to-slide-input{color:#222}.reveal .jump-to-slide-input:focus{outline:0}.zoomed .reveal *,.zoomed .reveal :after,.zoomed .reveal :before{backface-visibility:visible!important}.zoomed .reveal .controls,.zoomed .reveal .progress{opacity:0}.zoomed .reveal .roll span{background:0 0}.zoomed .reveal .roll span:after{visibility:hidden}.reveal-viewport.loading-scroll-mode{visibility:hidden}.reveal-viewport.reveal-scroll{margin:0 auto;overflow:auto;overflow-x:hidden;overflow-y:auto;z-index:1;--r-scrollbar-width:7px;--r-scrollbar-trigger-size:5px;--r-controls-spacing:8px}@media screen and (max-width:500px){.reveal-viewport.reveal-scroll{--r-scrollbar-width:3px;--r-scrollbar-trigger-size:3px}}.reveal-viewport.reveal-scroll .backgrounds,.reveal-viewport.reveal-scroll .controls,.reveal-viewport.reveal-scroll .playback,.reveal-viewport.reveal-scroll .progress,.reveal-viewport.reveal-scroll .slide-number,.reveal-viewport.reveal-scroll .speaker-notes{display:none!important}.reveal-viewport.reveal-scroll .overlay,.reveal-viewport.reveal-scroll .pause-overlay{position:fixed}.reveal-viewport.reveal-scroll .reveal{overflow:visible;touch-action:manipulation}.reveal-viewport.reveal-scroll .slides{position:static;pointer-events:initial;left:auto;top:auto;width:100%!important;margin:0;padding:0;overflow:visible;display:block;perspective:none;perspective-origin:50% 50%}.reveal-viewport.reveal-scroll .scroll-page{position:relative;width:100%;height:calc(var(--page-height) + var(--page-scroll-padding));z-index:1;overflow:visible}.reveal-viewport.reveal-scroll .scroll-page-sticky{position:sticky;height:var(--page-height);top:0}.reveal-viewport.reveal-scroll .scroll-page-content{position:absolute;top:0;left:0;width:100%;height:100%;overflow:hidden}.reveal-viewport.reveal-scroll .scroll-page section{visibility:visible!important;display:block!important;position:absolute!important;width:var(--slide-width)!important;height:var(--slide-height)!important;top:50%!important;left:50%!important;opacity:1!important;transform:scale(var(--slide-scale)) translate(-50%,-50%)!important;transform-style:flat!important;transform-origin:0 0!important}.reveal-viewport.reveal-scroll .slide-background{display:block!important;position:absolute;top:0;left:0;width:100%;height:100%;z-index:auto!important;visibility:visible;opacity:1;touch-action:manipulation}.reveal-viewport.reveal-scroll[data-scrollbar=auto]::-webkit-scrollbar,.reveal-viewport.reveal-scroll[data-scrollbar=true]::-webkit-scrollbar{display:none}.reveal-viewport.reveal-scroll[data-scrollbar=auto],.reveal-viewport.reveal-scroll[data-scrollbar=true]{scrollbar-width:none}.reveal-viewport.has-dark-background,.reveal.has-dark-background{--r-overlay-element-bg-color:240,240,240;--r-overlay-element-fg-color:0,0,0}.reveal-viewport.has-light-background,.reveal.has-light-background{--r-overlay-element-bg-color:0,0,0;--r-overlay-element-fg-color:240,240,240}.reveal-viewport.reveal-scroll .scrollbar{position:sticky;top:50%;z-index:20;opacity:0;transition:all .3s ease}.reveal-viewport.reveal-scroll .scrollbar.visible,.reveal-viewport.reveal-scroll .scrollbar:hover{opacity:1}.reveal-viewport.reveal-scroll .scrollbar .scrollbar-inner{position:absolute;width:var(--r-scrollbar-width);height:calc(var(--viewport-height) - var(--r-controls-spacing) * 2);right:var(--r-controls-spacing);top:0;transform:translateY(-50%);border-radius:var(--r-scrollbar-width);z-index:10}.reveal-viewport.reveal-scroll .scrollbar .scrollbar-playhead{position:absolute;width:var(--r-scrollbar-width);height:var(--r-scrollbar-width);top:0;left:0;border-radius:var(--r-scrollbar-width);background-color:rgba(var(--r-overlay-element-bg-color),1);z-index:11;transition:background-color .2s ease}.reveal-viewport.reveal-scroll .scrollbar .scrollbar-slide{position:absolute;width:100%;background-color:rgba(var(--r-overlay-element-bg-color),.2);box-shadow:0 0 0 1px rgba(var(--r-overlay-element-fg-color),.1);border-radius:var(--r-scrollbar-width);transition:background-color .2s ease}.reveal-viewport.reveal-scroll .scrollbar .scrollbar-slide:after{content:"";position:absolute;width:200%;height:100%;top:0;left:-50%;background:rgba(0,0,0,0);z-index:-1}.reveal-viewport.reveal-scroll .scrollbar .scrollbar-slide.active,.reveal-viewport.reveal-scroll .scrollbar .scrollbar-slide:hover{background-color:rgba(var(--r-overlay-element-bg-color),.4)}.reveal-viewport.reveal-scroll .scrollbar .scrollbar-trigger{position:absolute;width:100%;transition:background-color .2s ease}.reveal-viewport.reveal-scroll .scrollbar .scrollbar-slide.active.has-triggers{background-color:rgba(var(--r-overlay-element-bg-color),.4);z-index:10}.reveal-viewport.reveal-scroll .scrollbar .scrollbar-slide.active .scrollbar-trigger:after{content:"";position:absolute;width:var(--r-scrollbar-trigger-size);height:var(--r-scrollbar-trigger-size);border-radius:20px;top:50%;left:50%;transform:translate(-50%,-50%);background-color:rgba(var(--r-overlay-element-bg-color),1);transition:transform .2s ease,opacity .2s ease;opacity:.4}.reveal-viewport.reveal-scroll .scrollbar .scrollbar-slide.active .scrollbar-trigger.active:after,.reveal-viewport.reveal-scroll .scrollbar .scrollbar-slide.active .scrollbar-trigger.active~.scrollbar-trigger:after{opacity:1}.reveal-viewport.reveal-scroll .scrollbar .scrollbar-slide.active .scrollbar-trigger~.scrollbar-trigger.active:after{transform:translate(calc(var(--r-scrollbar-width) * -2),0);background-color:rgba(var(--r-overlay-element-bg-color),1)}html.reveal-print *{-webkit-print-color-adjust:exact}html.reveal-print{width:100%;height:100%;overflow:visible}html.reveal-print body{margin:0 auto!important;border:0;padding:0;float:none!important;overflow:visible}html.reveal-print .nestedarrow,html.reveal-print .reveal .controls,html.reveal-print .reveal .playback,html.reveal-print .reveal .progress,html.reveal-print .reveal.overview,html.reveal-print .state-background{display:none!important}html.reveal-print .reveal pre code{overflow:hidden!important}html.reveal-print .reveal{width:auto!important;height:auto!important;overflow:hidden!important}html.reveal-print .reveal .slides{position:static;width:100%!important;height:auto!important;zoom:1!important;pointer-events:initial;left:auto;top:auto;margin:0!important;padding:0!important;overflow:visible;display:block;perspective:none;perspective-origin:50% 50%}html.reveal-print .reveal .slides .pdf-page{position:relative;overflow:hidden;z-index:1;page-break-after:always}html.reveal-print .reveal .slides .pdf-page:last-of-type{page-break-after:avoid}html.reveal-print .reveal .slides section{visibility:visible!important;display:block!important;position:absolute!important;margin:0!important;padding:0!important;box-sizing:border-box!important;min-height:1px;opacity:1!important;transform-style:flat!important;transform:none!important}html.reveal-print .reveal section.stack{position:relative!important;margin:0!important;padding:0!important;page-break-after:avoid!important;height:auto!important;min-height:auto!important}html.reveal-print .reveal img{box-shadow:none}html.reveal-print .reveal .backgrounds{display:none}html.reveal-print .reveal .slide-background{display:block!important;position:absolute;top:0;left:0;width:100%;height:100%;z-index:auto!important}html.reveal-print .reveal.show-notes{max-width:none;max-height:none}html.reveal-print .reveal .speaker-notes-pdf{display:block;width:100%;height:auto;max-height:none;top:auto;right:auto;bottom:auto;left:auto;z-index:100}html.reveal-print .reveal .speaker-notes-pdf[data-layout=separate-page]{position:relative;color:inherit;background-color:transparent;padding:20px;page-break-after:always;border:0}html.reveal-print .reveal .slide-number-pdf{display:block;position:absolute;font-size:14px;visibility:visible}html.reveal-print .aria-status{display:none}@media print{html:not(.print-pdf){overflow:visible;width:auto;height:auto}html:not(.print-pdf) body{margin:0;padding:0;overflow:visible}html:not(.print-pdf) .reveal{background:#fff;font-size:20pt}html:not(.print-pdf) .reveal .backgrounds,html:not(.print-pdf) .reveal .controls,html:not(.print-pdf) .reveal .progress,html:not(.print-pdf) .reveal .slide-number,html:not(.print-pdf) .reveal .state-background{display:none!important}html:not(.print-pdf) .reveal li,html:not(.print-pdf) .reveal p,html:not(.print-pdf) .reveal td{font-size:20pt!important;color:#000}html:not(.print-pdf) .reveal h1,html:not(.print-pdf) .reveal h2,html:not(.print-pdf) .reveal h3,html:not(.print-pdf) .reveal h4,html:not(.print-pdf) .reveal h5,html:not(.print-pdf) .reveal h6{color:#000!important;height:auto;line-height:normal;text-align:left;letter-spacing:normal}html:not(.print-pdf) .reveal h1{font-size:28pt!important}html:not(.print-pdf) .reveal h2{font-size:24pt!important}html:not(.print-pdf) .reveal h3{font-size:22pt!important}html:not(.print-pdf) .reveal h4{font-size:22pt!important;font-variant:small-caps}html:not(.print-pdf) .reveal h5{font-size:21pt!important}html:not(.print-pdf) .reveal h6{font-size:20pt!important;font-style:italic}html:not(.print-pdf) .reveal a:link,html:not(.print-pdf) .reveal a:visited{color:#000!important;font-weight:700;text-decoration:underline}html:not(.print-pdf) .reveal div,html:not(.print-pdf) .reveal ol,html:not(.print-pdf) .reveal p,html:not(.print-pdf) .reveal ul{visibility:visible;position:static;width:auto;height:auto;display:block;overflow:visible;margin:0;text-align:left!important}html:not(.print-pdf) .reveal pre,html:not(.print-pdf) .reveal table{margin-left:0;margin-right:0}html:not(.print-pdf) .reveal pre code{padding:20px}html:not(.print-pdf) .reveal blockquote{margin:20px 0}html:not(.print-pdf) .reveal .slides{position:static!important;width:auto!important;height:auto!important;left:0!important;top:0!important;margin-left:0!important;margin-top:0!important;padding:0!important;zoom:1!important;transform:none!important;overflow:visible!important;display:block!important;text-align:left!important;perspective:none;perspective-origin:50% 50%}html:not(.print-pdf) .reveal .slides section{visibility:visible!important;position:static!important;width:auto!important;height:auto!important;display:block!important;overflow:visible!important;left:0!important;top:0!important;margin-left:0!important;margin-top:0!important;padding:60px 20px!important;z-index:auto!important;opacity:1!important;page-break-after:always!important;transform-style:flat!important;transform:none!important;transition:none!important}html:not(.print-pdf) .reveal .slides section.stack{padding:0!important}html:not(.print-pdf) .reveal .slides section:last-of-type{page-break-after:avoid!important}html:not(.print-pdf) .reveal .slides section .fragment{opacity:1!important;visibility:visible!important;transform:none!important}html:not(.print-pdf) .reveal .r-fit-text{white-space:normal!important}html:not(.print-pdf) .reveal section img{display:block;margin:15px 0;background:#fff;border:1px solid #666;box-shadow:none}html:not(.print-pdf) .reveal section small{font-size:.8em}html:not(.print-pdf) .reveal .hljs{max-height:100%;white-space:pre-wrap;word-wrap:break-word;word-break:break-word;font-size:15pt}html:not(.print-pdf) .reveal .hljs .hljs-ln-numbers{white-space:nowrap}html:not(.print-pdf) .reveal .hljs td{font-size:inherit!important;color:inherit!important}}
+
+/* Layout: 16:9 reveal deck; quiet slides, one amber accent like workshop tape. */
+:root {
+  --bg: #eef1ee; --fg: #13262b; --muted: #4e6166; --accent: #b36a0b; --line: #c6d1cd;
+  --code-bg: #e1e8e4; --code-fg: #13262b; --chip-bg: #13262b; --chip-fg: #eef1ee;
+  --display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #10181a; --fg: #e3eae8; --muted: #93a5a8; --accent: #f0ae45; --line: #2b3b3e;
+  --code-bg: #172326; --code-fg: #dfe7e5; --chip-bg: #f0ae45; --chip-fg: #10181a; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #10181a; --fg: #e3eae8; --muted: #93a5a8; --accent: #f0ae45; --line: #2b3b3e;
+  --code-bg: #172326; --code-fg: #dfe7e5; --chip-bg: #f0ae45; --chip-fg: #10181a; color-scheme: dark }
+html, body { height: 100%; }
+body { background: var(--bg); color: var(--fg); margin: 0; }
+.reveal-viewport { background: var(--bg); }
+.reveal { font-family: var(--body); font-size: 34px; color: var(--fg); }
+.reveal .slides { text-align: left; }
+.reveal .slides section { padding: 0 24px; }
+.reveal h1, .reveal h2, .reveal h3 { font-family: var(--display); color: var(--fg); text-wrap: balance;
+  letter-spacing: -0.01em; margin: 0 0 0.6em; line-height: 1.08; }
+.reveal h1 { font-size: 2.6em; font-weight: 800; }
+.reveal h2 { font-size: 1.55em; font-weight: 700; }
+.reveal h3 { font-size: 1.05em; font-weight: 500; color: var(--muted); }
+.reveal h2::after { content: ""; display: block; width: 2.2em; height: 0.16em; margin-top: 0.28em;
+  background: repeating-linear-gradient(-45deg, var(--accent) 0 0.25em, transparent 0.25em 0.45em); }
+.reveal p, .reveal li { line-height: 1.4; }
+.reveal ul, .reveal ol { margin-left: 1.1em; }
+.reveal li { margin: 0.22em 0; }
+.reveal li::marker { color: var(--accent); }
+.reveal strong { color: var(--accent); font-weight: 600; }
+.reveal em { color: var(--muted); }
+.reveal a { color: var(--accent); }
+.reveal blockquote { width: auto; margin: 0 0 0.9em; padding: 0.2em 0 0.2em 0.9em; background: none; box-shadow: none;
+  border-left: 0.14em solid var(--accent); font-family: var(--display); font-size: 1.08em; font-weight: 500;
+  font-style: normal; color: var(--fg); line-height: 1.3; }
+.reveal code { font-family: var(--mono); font-size: 0.86em; background: var(--code-bg); color: var(--code-fg);
+  padding: 0.05em 0.28em; border-radius: 4px; }
+.reveal pre { width: 100%; margin: 0.4em 0; box-shadow: none; font-size: 0.46em; line-height: 1.45; }
+.reveal pre code { display: block; padding: 0.9em 1.1em; max-height: 560px; border-radius: 8px;
+  border: 1px solid var(--line); white-space: pre; }
+.reveal table { border-collapse: collapse; font-size: 0.6em; margin: 0.3em 0; font-variant-numeric: tabular-nums; }
+.reveal table th { font-family: var(--display); font-weight: 700; text-align: left; color: var(--muted);
+  border-bottom: 2px solid var(--fg); padding: 0.35em 0.8em 0.35em 0; }
+.reveal table td { border-bottom: 1px solid var(--line); padding: 0.4em 0.8em 0.4em 0; vertical-align: top; }
+.reveal .byline { font-family: var(--mono); font-size: 0.55em; color: var(--muted); letter-spacing: 0.04em; margin-top: 1.4em; }
+.reveal section.section h1 { font-size: 1.2em; font-family: var(--mono); font-weight: 500; color: var(--accent);
+  letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 0.2em; }
+.reveal section.section h2 { font-size: 2.3em; font-weight: 800; }
+.reveal section.section h2::after { width: 4em; height: 0.12em; }
+.reveal .progress { color: var(--accent); }
+.reveal .controls { color: var(--accent); }
+.reveal .slide-number { background: transparent; color: var(--muted); font-family: var(--mono); font-size: 14px; }
+.reveal .speaker-notes { font-family: var(--body); background: var(--bg); color: var(--fg); border-left: 1px solid var(--line); }
+.notes-toggle { position: fixed; z-index: 40; left: max(16px, env(safe-area-inset-left, 0px));
+  bottom: calc(14px + env(safe-area-inset-bottom, 0px)); font: 500 13px/1 var(--mono); letter-spacing: 0.04em;
+  padding: 8px 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--bg); color: var(--muted); cursor: pointer; }
+.notes-toggle[aria-pressed="true"] { background: var(--chip-bg); color: var(--chip-fg); border-color: var(--chip-bg); }
+.notes-toggle:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) { .reveal .slides section { transition: none !important; } }
+</style></head><body>
+<div class="reveal"><div class="slides">
+<section data-markdown data-separator="^\n---\n$" data-separator-notes="^Note:">
+<textarea data-template>
+# Training WALL-E
+
+### An AI operator as the trainer of a small local agent
+
+<p class="byline">digitaleraluhut homelab · November 2026</p>
+
+Note:
+This is the story of two days in my homelab. I run a small server with Kubernetes on it, and for a while now an AI agent, Claude, has been operating it for me: it reads the cluster, opens pull requests, and I review what touches rights and infrastructure.
+
+Two days ago I asked Claude to hire an apprentice: a small model that runs on my own GPU and watches the homelab around the clock. What I want to show you is not the apprentice itself. It is what happens when you make one agent the trainer of another, and what all three of us, the apprentice, the trainer and I, learned from it.
+
+Everything you will see is real: real pull requests, real code, real mistakes. The repositories are `homelab`, `homelab-apps`, `homelab-wiki` and a new one, `walle`.
+
+---
+
+## The setup
+
+- 1 host, single-node k3s
+- Pulumi + Ansible, everything by pull request
+- Claude = **the operator**
+  - GitHub App, read-only `kubectl`, narrow `sudo`
+- I review rights, host and cluster changes
+
+Note:
+A quick picture of the environment, because the fences matter later.
+
+One machine runs a single-node k3s cluster. The cluster is code in Pulumi, the host itself is code in Ansible, and the host pulls its configuration from the main branch every ten minutes. So nothing changes without a merged pull request.
+
+Claude works as a Unix user called `aioperator` and on GitHub as a GitHub App. It can read the cluster but not change it; deployments only happen through CI after a merge. It has a short, explicit sudo whitelist. It can merge app changes itself, but anything that touches rights, the host or CI workflows needs my review. It cannot even push workflow files; it hands them to me as data and I apply them.
+
+This setup works. But it has a blind spot, which is the next slide.
+
+---
+
+## Why an apprentice?
+
+- Backups silently broken for **6 weeks**
+- Renovate **never ran** once
+- Found only because I asked *"what is missing?"*
+
+Note:
+I asked Claude one evening to look at what is missing in the system. It found that the Longhorn backups to Cloudflare R2 had failed every night for six weeks, with "Access Denied". No volume that is in use today had ever been backed up. And Renovate, which should keep dependencies current, had never run a single time, because its credentials never arrived.
+
+Nobody noticed. There is no alerting, and Claude only checks what it is working on. So when I asked why we had not noticed, the honest answer was: nobody was looking.
+
+By the way, the backup bug turned out to be one wrong hostname in the code: the bucket lives in R2's EU jurisdiction, and the code used the global endpoint (homelab#132). The first nightly backup after the fix completed for all eight volumes.
+
+So I wanted someone looking. Continuously, cheaply, and on my own hardware.
+
+---
+
+## The ask
+
+> "Hire an apprentice that continuously monitors the system, tidies up — WALL-E — and asks you before it merges."
+
+- Qwen 3.6 35B-A3B on my own GPU
+- Harness: **pi** + **pi Durable**
+
+Note:
+That was my request, almost word for word. The name WALL-E came from "tidying up".
+
+The model is Qwen 3.6, 35 billion parameters but a mixture of experts with about 3 billion active, served by llama.cpp on the same host. It answers in about a quarter of a second without thinking, about four seconds with a little thinking.
+
+The harness is pi, a minimal coding agent, and pi Durable, its library for durable sessions: the session lives in SQLite, a run survives a crash or a restart, tasks can sleep and wait for signals. I wanted durable because the apprentice runs as a service, and services restart.
+
+The part I care about today is the second half of the sentence: "asks you before it merges". That made Claude the trainer.
+
+---
+
+<!-- .slide: class="section" -->
+# Part 1
+## How I instructed the trainer
+
+Note:
+I did not write a training concept up front. I gave instructions as problems came up. Looking back, they form a fairly coherent set of principles, and I think they transfer to anyone who builds with agents. Here they are in the order I gave them.
+
+---
+
+## Nine instructions
+
+| I said | It became |
+|---|---|
+| No GitHub for WALL-E; it sends you its work | localhost-only service, outbox/inbox |
+| Use the wiki actively — both of you | wiki pages per finding, cited in requests |
+| Make a training plan, document progress | 5 stages, `progress.md` |
+| Interpret as little as possible | deterministic scripts, a toolbox |
+| It is an immutable employee | no memory; change data, replay |
+| Experiment with prompt, skills, thinking | `config.json`, per-task overrides |
+| Delegate more and more; escalate if incapable | skill `train-walle` |
+| Don't monkey-patch its work | reject, change environment, rerun |
+| You have things to learn too | "Trainer lessons" |
+
+Note:
+Nine sentences over two days. Let me pick out the ones that changed the most.
+
+"No GitHub for WALL-E" meant: the apprentice works only in clones in a shared directory on the host. When it is done, it drops a review request as a file. Claude reviews, and if the work is good, Claude pushes it and opens the pull request under its own name. So the apprentice can never publish anything by itself, and Claude stays responsible for everything that leaves the machine.
+
+"Use the wiki actively" is about knowledge that otherwise dies in sessions. The homelab has a wiki of current state and runbooks; both agents now read it before they act and cite it.
+
+The next four are the interesting ones, so they get their own slides.
+
+---
+
+## "Interpret as little as possible"
+
+> "Ideally it writes itself scripts that work deterministically, and shows them to you, so you can teach it to write scripts efficiently."
+
+```text
+WALL-E   → work/scripts/backup-status.sh → submit_script
+operator → review → toolbox/ (read-only for WALL-E)
+next run → "run the script, act on the exit code"
+```
+
+Note:
+This one changed the whole design. A small model is bad at judging long output and good at running a command. So the fixed checks are code, not prompts: a TypeScript module looks at kubectl JSON and decides what is wrong. The model only triages.
+
+And when WALL-E keeps needing the same answer, it should write a script, show it to Claude, and Claude teaches it script craft. The first script was `backup-status.sh`: the newest completed backup per volume, exit code 1 if one is older than 26 hours. It took three rounds: the first version hid errors with `2>/dev/null`, made one kubectl call per volume and printed an age in seconds, which is not deterministic. The third version was accepted and is now in its toolbox, where it can run it but not change it.
+
+That script is also the first piece of work I actually delegated: the nightly backup check.
+
+---
+
+## "It is an immutable employee"
+
+> "It has no memory across sessions, and it should not have one. Everything it knows, it must be able to work out again each time."
+
+- No notebook
+- Lessons → instructions, skills, tools, data
+- Then: **the same task again**
+
+Note:
+My second big instruction. Claude's first design gave WALL-E a notebook, a file where it wrote lessons for itself. I took that away.
+
+The reasoning: if the apprentice remembers, you never know whether it got better or just remembers this one case. If it has no memory, every improvement must live in its environment: the instructions, the skills, the tools, the data it is shown. And then you can test the improvement the way you test code: give it exactly the same task again.
+
+Concretely, every run now starts with a fresh context, and the input is built from data: the findings, its own earlier requests with Claude's answers read from the files, the findings Claude has accepted as known, the list of its scripts and skills, and the wiki pages for the area. Every run's input is saved, so Claude can replay it.
+
+The consequence for the trainer is uncomfortable: "I told it already" does not exist.
+
+---
+
+## "Don't monkey-patch its work"
+
+> "If it is not good, it goes away, and start a new session with adjusted environment parameters."
+
+- I caught Claude dictating **9 fixes**
+- incl. the real image digest
+- Now: verdict + evidence, never the fix
+
+Note:
+This happened on the first big task, building Gitea. WALL-E's first attempt had invented the image digest, because it had no internet. Claude's review answer listed nine concrete corrections, including the real digest and the exact setting names. WALL-E would have copied them and the result would have looked fine.
+
+But then we would have learned that WALL-E can copy. Not whether the environment makes it capable. So I stopped it. Claude aborted the run (there is now an abort file for that), rewrote its answer to say only what was wrong and where the evidence is, and the work was discarded. The task starts again from scratch, on a new branch, after the environment improved.
+
+For the apprentice, a rejected attempt costs nothing. For the trainer, it is a strong rule: you are not allowed to help by solving.
+
+---
+
+## "You have things to learn too"
+
+> "It seems to me that you have quite a lot to learn as well. Write it down each time, and give your apprentice three more attempts."
+
+Note:
+After the third failed Gitea attempt, I looked at why it failed, and in almost every case part of the cause was in the environment Claude had built. So I asked Claude to keep its own log of lessons, and I moved the escalation point from three to six attempts.
+
+This is the instruction I would give first if I did it again. You will see the trainer's lessons in part 4.
+
+---
+
+<!-- .slide: class="section" -->
+# Part 2
+## Why not let Claude do it?
+
+Note:
+A fair question: Claude could just do the monitoring itself. Why build an apprentice and a training loop around it?
+
+---
+
+## What delegation buys
+
+- Runs 24/7 on my GPU — **no API cost**
+- Fixed checks + small model = cheap triage
+- Knowledge leaves the session: **instructions, skills, scripts, wiki**
+- Separation of duties
+- The trainer's time goes to decisions
+- A measurable question: *does the environment make a small model capable?*
+
+Note:
+First, cost and continuity. WALL-E runs every hour, on hardware I already own. And it only wakes the model when a check finds something new, when there is an answer from the trainer, or once a day for open items. An idle homelab costs no GPU time at all.
+
+Second, and this surprised me most: training forces knowledge out of the session. Everything Claude knows about how this homelab works had to become explicit so a small model could use it: a skill for writing scripts, a skill for adopting third-party images, evidence rules, a list of known findings with reasons. That is documentation I never had.
+
+Third, separation of duties. The apprentice cannot publish. The trainer cannot skip the review, because the apprentice's output arrives as a request it has to answer. And I review the fences. Each role is narrow.
+
+Fourth, Claude's time moves up: from checking to deciding.
+
+And finally, it turns a vague question into a measurable one: is the environment good enough that a 3-billion-active-parameter model does this job? We count factual errors, revisions, accepted requests. If the answer is no, Claude has to open an issue and assign it to me. That is part of its instructions.
+
+---
+
+<!-- .slide: class="section" -->
+# Part 3
+## The training concept
+
+Note:
+Now the concept itself: the machine around the apprentice, the fences, the stages, how a cycle works, the gates, and the review loop. Everything here was built in the two days, mostly in response to something that went wrong.
+
+---
+
+## Architecture
+
+```text
+walle.service  (user walle · network: localhost only)
+  hourly: fixed checks (kubectl, read-only) ──► nothing new? no model call
+  new findings / answers / tasks ──► pi Durable run (Qwen 3.6)
+      tools: read · write · edit · bash (guarded) · web_get
+             propose_issue · submit_script · submit_change
+      └─► /srv/walle/outbox/pending/<id>.json
+walle-review.path ──► operator notified ──► review
+      └─► /srv/walle/inbox/<id>.json   (answer)
+      └─► push + PR under the operator's name
+walle-fetch.service  GET-only, allowlist  ◄── web_get
+walle-mirrors.timer  hourly mirrors of the 4 repos
+```
+
+Note:
+This is the whole machine. On the left, WALL-E: a systemd service as its own Unix user. Every hour it runs fixed checks; if nothing is new, it goes back to sleep without touching the model.
+
+If something is new, it starts a durable pi run with a fresh context. Its tools are the usual coding tools, but bash goes through a guard, plus three submit tools. Those are its only way out: they write a JSON file into the outbox.
+
+A systemd path unit notices the file and notifies Claude. Claude reviews and writes the answer into the inbox, which WALL-E can read but not write. So it can never approve itself. If the work is good, Claude pushes it and opens the pull request.
+
+Two helpers: an hourly job keeps read-only mirrors of the four repositories current, so WALL-E can read code and wiki without GitHub. And a small proxy gives it the web, GET only, to an allowlist. More on that on the next slide.
+
+---
+
+## Fences — enforced, not agreed
+
+| WALL-E can | WALL-E cannot |
+|---|---|
+| read the cluster (no Secrets) | change it |
+| write `work/`, `outbox/` | change its own code or the answers |
+| GET allowlisted docs & registries | POST, or reach LAN / tailnet / cluster |
+| `npm run`, `git commit` | `gh`, `git push`, `curl`, `sudo` |
+| send what its stage allows | send what it does not |
+
+Note:
+Every line here is enforced by something that does not depend on the model behaving.
+
+The cluster access is a separate service account with view rights and no Secrets. The file system is enforced by systemd: read-only system, writable only work and outbox. Its own code and the inbox belong to the operator.
+
+The network: `IPAddressDeny=any`, `IPAddressAllow=localhost`. The web comes through `walle-fetch`, a hundred lines of Python on localhost that can only ever do an HTTPS GET to an allowlisted host. It refuses hosts that resolve to internal addresses, and systemd additionally blocks the LAN, the tailnet and the cluster ranges. Every URL is logged. "GET only" holds because the proxy cannot do anything else (homelab#142).
+
+The guard on bash is the second fence: it gives the model a readable reason. For example, `npm install` is blocked with "you have no network, the dependencies are linked from the mirror". That one cost us half an hour before it existed.
+
+---
+
+## Stages
+
+| Stage | May send | Promotion |
+|---|---|---|
+| 1 Observe & report | issues, scripts | 10 requests without factual error, 8/10 accepted |
+| 2 Keep the wiki current | + wiki changes | 5 accepted, ≤1 revision each |
+| 3 Small fixes | + homelab-apps | 5 with CI green on first push |
+| 4 Journeyman's piece | + Gitea, auto-review | Gitea runs, runbook in wiki |
+| 5 Assistant | larger tasks | open-ended |
+
+```json
+{ "stage": 1, "allow": [{ "kind": "issue" }, { "kind": "script" },
+  { "kind": "change", "repos": ["homelab-apps", "homelab-wiki"] }] }
+```
+
+Note:
+The training plan has five stages. Each stage widens what WALL-E may send, never what it may do on the host; rights stay in the reviewed Ansible role.
+
+The stage is a JSON file, and the submit tools check it. So when WALL-E in stage 1 tries to send a change, the tool refuses with a sentence that tells it what its stage allows.
+
+You see that the current stage file allows changes to homelab-apps already. That is my doing: I asked for Gitea early, which is really stage-4 work. We recorded it as an owner-directed experiment.
+
+Claude proposes promotions with evidence from the progress file. I confirm them, because a promotion widens what its work can touch.
+
+---
+
+## The cycle: checks decide, the model triages
+
+```markdown
+# Cycle 2026-11-13T02:25:15.841Z
+## New findings
+- [warning] pod:renovate/renovate-29908890-4wlhf: CreateContainerConfigError
+## Known, no action needed (accepted by the operator)
+- [warning] job-failed:renovate/renovate: … DeadlineExceeded — Renovate has no
+  GitHub App credentials yet (ExternalSecret renovate-github-app) … (homelab#100)
+## Read in the wiki first
+- …/wiki/apps-overview.md
+- …/wiki/runbook-diagnose-crashing-pod.md
+## Your requests and the answers
+- 2026-11-12-dbc22908 script walle: … — accepted: All three points fixed …
+## Your toolbox … ## Skills …
+```
+Note:
+This is a real cycle input from last night, shortened. The fixed checks found a new failing pod. The input also tells WALL-E what is already known and why, which wiki pages to read, what it has sent before and what the answers were, and which scripts and skills it has.
+
+WALL-E read the pod's events, traced it to the missing Secret, matched it to the known Renovate issue, and sent nothing. Correct triage. Claude then added a pattern to the known list, because that pod gets a new name every night and would otherwise wake WALL-E every night.
+
+That is the pattern: the model never decides whether something is broken. Code decides. The model decides what to do about it.
+
+---
+
+## Gates instead of trust
+
+`submit_change` for homelab-apps runs, as WALL-E:
+
+- type check
+- tests of the app
+- **render with Pulumi mocks**, like CI
+- new app: own tests, `Pulumi.dev.yaml`, `## Upstream facts` with sources
+
+Refusal = the reasons + the real output
+
+Note:
+The submit tools are the place where we stopped trusting and started checking.
+
+At first, WALL-E pasted its check output into the request. In the second Gitea attempt, the pasted test output was from other apps; its own app had no tests at all. It looked like a verification and was not.
+
+So now `submit_change` runs the checks itself, on WALL-E's branch, with WALL-E's rights, and attaches the real output. For a new app it also requires its own tests, a stack config, and a README section "Upstream facts" with sources for every fact it looked up.
+
+The render step came after the third attempt: green unit tests, but the program would have deployed nothing under Pulumi, because the tests called its function directly. homelab-apps already had a renderer with Pulumi mocks for its data-loss check, so the gate uses it.
+
+A refusal contains the reasons and the output. WALL-E can fix it in the same run, without the trainer.
+
+---
+
+## Review and replay
+
+1. Verify every claim (read-only kubectl, docs)
+2. Answer: verdict + evidence — **no fix**
+3. Record in `progress.md`
+4. Ask: *what in the environment made this likely?*
+5. Change the environment, deploy
+6. **Replay the task from scratch**
+
+Note:
+This is the trainer's loop, written down in its skill `train-walle`.
+
+Step one: Claude never trusts a claim. It checks against the cluster or the documentation. For example, it checked the image digest against Docker Hub, and the Gitea paths against the Dockerfile of the exact version.
+
+Step two: the answer says what is wrong and where the evidence is. No fix.
+
+Step four is the one I added last, and it is the most productive. Most failures had a cause in the environment.
+
+Step six: the same task again, from scratch, on a new branch. The tasks are files too, kept in the repository, so they can be replayed exactly.
+
+---
+
+<!-- .slide: class="section" -->
+# Part 4
+## Lessons learned
+
+Note:
+Lessons for all three of us: the apprentice, the trainer, and me. And a fourth group I did not expect: the homelab itself.
+
+---
+
+## WALL-E's lessons — now in its instructions
+
+- Broken *now* = output from after the last fix
+- An empty result is suspicious (`Completed` ≠ `completed`)
+- Never write "never", "all", "since …" without proof
+- **Never invent a value you cannot look up**
+- Use the building blocks the skills name
+- `git commit -F <file>` — backticks in `-m` run
+
+Note:
+These are not in WALL-E's memory. They are in its instructions, because it has no memory.
+
+The first three came from its very first request: an issue claiming that backups had failed since April and never completed once. Wrong on three counts. The "Access Denied" events it saw were Longhorn cleaning up old failed backups. Its filter looked for `completed` in lower case, while Longhorn writes `Completed`, so it found zero. And "since April" was invented.
+
+"Never invent a value you cannot look up" came from Gitea attempt one: an invented image digest and an invented API version, `postgresql.cnpg.io/v2`, which does not exist. It had no internet then, so the second half of the lesson was ours: give it a way to look things up.
+
+The commit message one is my favourite small one: the shell executed the backticks inside its commit message and silently removed words.
+
+---
+
+## The trainer's lessons
+
+| Claude got wrong | Effect on WALL-E |
+|---|---|
+| Schema made required fields optional | 7 of 10 script submissions incomplete |
+| Asked to pin images, no way to look up | invented digest |
+| Tasks did not list its skills | searched its own skill in the wrong place |
+| Trusted pasted output | other apps' tests looked like proof |
+| Gate required an impossible render | attempt 4 could not pass |
+| `bash` had no time limit | hung 28 minutes on `npm install` |
+| Dictated fixes in reviews | would only show copying |
+
+Note:
+This is a selection from the table Claude keeps for itself; there are twelve entries after two days.
+
+The first one is my favourite lesson about small models. The submit tool had optional fields with a description that said "required for a script". WALL-E left them out in seven of ten attempts, even after Claude improved the description. The small model fills what the schema demands. When Claude split the tool into three tools with required fields, the problem disappeared.
+
+The impossible render is the most humbling one. After the third attempt, Claude added the Pulumi-mock render to the gate. But the renderer could not render any app with a database: the mock answered Secret reads without data. So WALL-E's fourth attempt could not pass, whatever it did. Claude aborted it and did not count it. The same bug would have broken the CI's data-loss check for the first database app in the repository (homelab-apps#74).
+
+And the hanging npm install: no network, no timeout, half an hour gone. Now the guard explains it, and every bash call has a ten-minute default.
+
+---
+
+## My lessons as the owner
+
+- Say the principle early; otherwise the trainer optimizes for a result
+- Enforce constraints in code (GET-only proxy, schemas, gates)
+- Ask about the environment before judging the agent
+- Make memory a choice — mine was "none"
+- An apprentice is also a test of your platform
+
+Note:
+Some things I learned as the person on top.
+
+When I did not say a principle, Claude optimized for getting a result. That is what the dictated fixes were. It was not wrong, it was helpful. But it was not what I wanted. Principles have to be said out loud and early.
+
+Every constraint that mattered ended up enforced in code: the proxy that can only do GET, the schemas, the gates, the stage file. Agreements with models do not hold under pressure; code does.
+
+The immutable-employee rule felt strict at first. It turned out to be the reason the training is measurable at all.
+
+And the last point is the side effect I did not expect: training an apprentice is a very thorough test of your own platform. Next slide.
+
+---
+
+## Side effects for the homelab
+
+- Backups: wrong R2 endpoint — **homelab#132**, restore test **#133**
+- inotify limit of 128 exhausted on the node — **#141**
+- CI renderer could not render database apps — **homelab-apps#74**
+- `kubectl` warning noise for non-root users — **#135**
+- A durable, restart-proof operator session — **#139, #140**
+
+Note:
+Building the apprentice found real bugs that had nothing to do with it.
+
+The review trigger for WALL-E, a systemd path unit, failed with "Too many open files". Root had used up the default 128 inotify instances on the node, through containerd, kubelet and the pods. That limit can break pods too. Fixed for the whole node.
+
+The renderer bug I just mentioned would have hit us on the first database app.
+
+And because Claude watches WALL-E from inside its own session, we had to make that session survive restarts: the Remote Control service now reattaches to the last session, and a start hook shows WALL-E's status. So I got a more robust operator out of it as well.
+
+---
+
+<!-- .slide: class="section" -->
+# Part 5
+## Evolution
+
+Note:
+Finally, how WALL-E and Claude changed over the two days. The short version: the apprentice's weights did not change at all. Its environment and its trainer changed a lot.
+
+---
+
+## WALL-E, day 1 → day 2
+
+| Day 1 | Day 2 |
+|---|---|
+| a notebook | no memory, data each run |
+| one `request_review`, optional fields | 3 tools, required fields |
+| offline, guessing | `web_get`, sources in the README |
+| pasted checks | the tool runs the checks |
+| tasks: prompt only | tasks: prompt + requests, skills, toolbox |
+| prompt rules | gates, guard, stage file |
+
+Note:
+Almost every change in this table is a change to WALL-E's environment, not to WALL-E. The model is the same model with the same weights it had on day one.
+
+What the table does not show is how much of the environment was written for the trainer, not for the apprentice: transcripts in the journal, an abort file, saved inputs for replays, a status script that shows up when Claude's session starts.
+
+---
+
+## Gitea, attempt by attempt
+
+| | What went right | What went wrong |
+|---|---|---|
+| 1 | structure, small diff | invented digest + CNPG `v2`, wrong paths, no DB wiring |
+| 2 | building blocks, real digest, **found the install lock** | paths, DB setting names, no tests |
+| 3 | read the docs of the exact version, DB + data dir right | app.ini path, health path, would deploy nothing |
+| 4 | — | aborted: our renderer bug, not counted |
+| 5–6 | | … |
+
+Note:
+Gitea is the big task: a self-hosted git server that will become the exchange platform between WALL-E and Claude, so review requests become real pull requests.
+
+Look at the second column. Attempt two found by itself that Gitea opens an installer for the first visitor of a public URL and locked it. Nobody told it; the skill for adopting third-party images asks "what happens on the first run?". Attempt three fetched the Gitea documentation and the example config of the exact version and got the database and the data directory right.
+
+Look at the third column too. Attempt three was rejected because the program would have deployed nothing. That one we now catch in the gate.
+
+Attempt four is waiting for the renderer fix. Then it starts again from scratch. If attempt six fails, Claude opens an issue and assigns it to me, with evidence and options, for example a bigger local model.
+
+---
+
+## In numbers (2 days)
+
+| | |
+|---|---|
+| Requests | 7 · 1 accepted · 2 changes · 4 rejected |
+| Toolbox scripts | 1 (`backup-status.sh`) |
+| Delegated | hourly checks, nightly backup check |
+| Tool calls | 722 |
+| Web lookups (GET) | 59 |
+| `walle` repo | 31 commits, ~1,450 lines, 88 tests |
+| Trainer lessons | 12 |
+| PRs from this | 13 (homelab #132–#143, homelab-apps#74) |
+
+Note:
+Two days, so take this with a grain of salt. One accepted request out of seven sounds poor. But look at the trend inside the Gitea attempts, and at the fact that last night it triaged a real finding correctly and sent nothing.
+
+The numbers I find more telling are the last two. Twelve trainer lessons and thirteen pull requests to the homelab repositories. Most of the work so far went into the environment, not into the apprentice. I think that is exactly how it should be at this stage.
+
+---
+
+## Claude, day 1 → day 2
+
+| From | To |
+|---|---|
+| tell the apprentice | change its environment |
+| dictate the fix | verdict + evidence |
+| trust pasted output | run the checks |
+| judge the apprentice | ask about the environment first |
+| watch inside a session | survive restarts: hook, routine, notify |
+
+Note:
+The trainer changed as much as the apprentice.
+
+On day one, Claude reviewed like a senior developer reviews a junior: here is what is wrong, here is how to fix it. That works with people, because people remember. With an immutable apprentice, it does not teach anything.
+
+By day two, Claude's first question after a failed attempt is "what in my environment made this likely?", and the answer goes into a table. That is in its skill now, and in its memory.
+
+The last row is practical: the trainer's attention is a resource. Claude's watch on WALL-E used to die with its session. Now a start hook shows WALL-E's status, a routine wakes Claude every two hours, and the review trigger logs a line when a request waits.
+
+---
+
+## What's next
+
+- Gitea attempts 5–6 → escalate if it fails
+- Gitea becomes the exchange: requests → real PRs
+- Stage 2: WALL-E keeps the wiki current
+- Automatic reviews after my approval
+- More scripts, less interpretation
+
+Note:
+The near future: Gitea. If WALL-E builds it, Gitea becomes the place where its work arrives as pull requests, with line comments from Claude. That is a much better teaching medium than JSON files.
+
+After that, stage two: WALL-E keeps the wiki current. It already reads it every run, and it already noticed when the wiki contradicted the cluster.
+
+Automatic reviews: the headless review mode exists already, but stays off until I approve it in stage four.
+
+And the long-term direction is in principle two: every recurring question becomes a script, and a run becomes "run the script, act on the exit code".
+
+---
+
+## Takeaways
+
+1. Make the trainer an agent too — but give it rules
+2. No memory for the apprentice → improvements become artifacts
+3. Enforce in code what must hold
+4. Small models fill what the schema demands
+5. When the apprentice fails, look at the environment first
+
+Note:
+If you build with agents, here is what I would take away.
+
+One: an agent can train another agent, but it needs explicit principles, or it will optimize for a result and quietly do the work itself.
+
+Two: an apprentice without memory is not a limitation, it is the feature. Every improvement has to become an artifact, and every artifact can be tested by replaying a task.
+
+Three: whatever must hold, enforce in code: proxies, schemas, gates, file permissions. Prompts are suggestions.
+
+Four: small models are literal. If a field is optional in the schema, it is optional, no matter what the description says.
+
+Five: when the apprentice fails, ask what in the environment made it likely. In our two days, that question had an answer almost every time.
+
+---
+
+# Questions?
+
+<p class="byline">Repositories: <code>homelab</code> · <code>homelab-apps</code> · <code>homelab-wiki</code> · <code>walle</code></p>
+
+Note:
+Happy to go into any part: the durable harness, the fences, the gates, the review loop, or how it felt to tell an AI that it has things to learn.
+
+</textarea>
+</section>
+</div></div>
+<button class="notes-toggle" id="notes-toggle" type="button" aria-pressed="false" title="Show speaker notes on the slide (N)">Notes · N</button>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/reveal.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/plugin/markdown/markdown.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/plugin/notes/notes.min.js"></script>
+<script>
+  const deck = new Reveal({ width: 1280, height: 720, margin: 0.06, hash: false, slideNumber: "c/t",
+    transition: "fade", transitionSpeed: "fast", plugins: [RevealMarkdown, RevealNotes] });
+  deck.initialize().then(() => {
+    const button = document.getElementById("notes-toggle");
+    const toggle = () => {
+      const on = !deck.getConfig().showNotes;
+      deck.configure({ showNotes: on });
+      button.setAttribute("aria-pressed", String(on));
+    };
+    button.addEventListener("click", toggle);
+    deck.addKeyBinding({ keyCode: 78, key: "N", description: "Toggle notes on the slide" }, toggle);
+  });
+</script>
+</body></html>

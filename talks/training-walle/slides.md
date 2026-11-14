@@ -478,8 +478,9 @@ What the table does not show is how much of the environment was written for the 
 | 1 | structure, small diff | invented digest + CNPG `v2`, wrong paths, no DB wiring |
 | 2 | building blocks, real digest, **found the install lock** | paths, DB setting names, no tests |
 | 3 | read the docs of the exact version, DB + data dir right | app.ini path, health path, would deploy nothing |
-| 4 | — | aborted: our renderer bug, not counted |
-| 5–6 | | … |
+| 4 | — | turn limit: no testing convention (ours) |
+| 5 | sourced facts, DB host, locked installer | 3 → 1 → 0 wrong facts in 3 rounds |
+| | **accepted, CI green, running** | 2 CI checks the gate lacked (ours) |
 
 Note:
 Gitea is the big task: a self-hosted git server that will become the exchange platform between WALL-E and Claude, so review requests become real pull requests.
@@ -488,27 +489,31 @@ Look at the second column. Attempt two found by itself that Gitea opens an insta
 
 Look at the third column too. Attempt three was rejected because the program would have deployed nothing. That one we now catch in the gate.
 
-Attempt four is waiting for the renderer fix. Then it starts again from scratch. If attempt six fails, Claude opens an issue and assigns it to me, with evidence and options, for example a bigger local model.
+Attempt four ran out of turns writing tests for its Pulumi program, because no one had written down how apps in this repo are tested. That went into its instructions.
+
+Attempt five is the one that made it. It went through three review rounds: three wrong facts, then one, then none. The last one was the health endpoint. In round two it cited a page that did not mention it, because our web tool dropped all links and it had to guess URLs. Once links were kept, it followed the docs' own navigation and cited the exact line in Gitea's router source.
+
+Even after acceptance, CI failed twice: the lockfile and a generated README table. Both were checks the gate did not run. Claude added them to the gate instead of fixing the branch, and WALL-E fixed both in one commit. Gitea runs since the fourteenth. The two faults on the way to production were in our platform, not in WALL-E's code: new stacks were not created, and the Postgres component used an image with the wrong user ID.
 
 ---
 
-## In numbers (2 days)
+## In numbers (3 days)
 
 | | |
 |---|---|
-| Requests | 7 · 1 accepted · 2 changes · 4 rejected |
+| Requests | 11 · 3 accepted · 4 changes · 4 rejected |
 | Toolbox scripts | 1 (`backup-status.sh`) |
 | Delegated | hourly checks, nightly backup check |
-| Tool calls | 722 |
-| Web lookups (GET) | 59 |
-| `walle` repo | 31 commits, ~1,450 lines, 88 tests |
-| Trainer lessons | 12 |
-| PRs from this | 13 (homelab #132–#143, homelab-apps#74) |
+| Tool calls | 1,219 |
+| Web lookups (GET) | 176 |
+| `walle` repo | 44 commits, ~1,500 lines, 94 tests |
+| Trainer lessons | 19 |
+| PRs from this | 21 (homelab #132–#148, homelab-apps #74–#78) |
 
 Note:
-Two days, so take this with a grain of salt. One accepted request out of seven sounds poor. But look at the trend inside the Gitea attempts, and at the fact that last night it triaged a real finding correctly and sent nothing.
+Three days, so take this with a grain of salt. Three accepted requests out of eleven sounds poor. But look at the trend inside the Gitea attempts, and at the fact that it triaged a real finding correctly and sent nothing.
 
-The numbers I find more telling are the last two. Twelve trainer lessons and thirteen pull requests to the homelab repositories. Most of the work so far went into the environment, not into the apprentice. I think that is exactly how it should be at this stage.
+The numbers I find more telling are the last two. Nineteen trainer lessons and twenty-one pull requests to the homelab repositories. Most of the work so far went into the environment, not into the apprentice. I think that is exactly how it should be at this stage.
 
 ---
 
@@ -535,14 +540,14 @@ The last row is practical: the trainer's attention is a resource. Claude's watch
 
 ## What's next
 
-- Gitea attempts 5–6 → escalate if it fails
+- Gitea runs → accounts for WALL-E and Claude
 - Gitea becomes the exchange: requests → real PRs
 - Stage 2: WALL-E keeps the wiki current
 - Automatic reviews after my approval
 - More scripts, less interpretation
 
 Note:
-The near future: Gitea. If WALL-E builds it, Gitea becomes the place where its work arrives as pull requests, with line comments from Claude. That is a much better teaching medium than JSON files.
+The near future: Gitea. WALL-E built it, and now it becomes the place where its work arrives as pull requests, with line comments from Claude. That is a much better teaching medium than JSON files.
 
 After that, stage two: WALL-E keeps the wiki current. It already reads it every run, and it already noticed when the wiki contradicted the cluster.
 
